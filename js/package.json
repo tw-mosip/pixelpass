@@ -1,0 +1,24 @@
+{
+  "name": "pixelpass-js",
+  "version": "0.0.1",
+  "description": "JS module that can be used to compress (zlib) , encode (base45) and generate QR out of given any data. Also can be used to do the operation vice versa",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "verify": "npm test"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "base45": "^2.0.1",
+    "expect": "^29.7.0",
+    "pako": "^2.1.0",
+    "qrcode": "^1.5.3"
+  }
+}

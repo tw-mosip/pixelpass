@@ -22,7 +22,7 @@ export function generateQRData(data, header= "" ) {
     return  header + b45.encode(compressedData).toString()
 }
 
-export async function generateQRBase64(data, ecc = DEFAULT_ECC_LEVEL,header="" ) {
+export async function generateQRBase64Image(data, ecc = DEFAULT_ECC_LEVEL, header="" ) {
     const base45Data = generateQRData(data,header)
     const opts = {
         errorCorrectionLevel: ecc ,

@@ -6,6 +6,10 @@
 - Uses zlib compression and base45 encoding
 - Decode QR data encoded by PixelPass
 
+## Installation 
+npm i @mosip/pixelpass
+
+[npm](https://www.npmjs.com/package/@mosip/pixelpass)
 
 ## APIs
 `generateQRData( data, header )`

@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import io.mosip.qr_generator.PixelPass
-import io.mosip.qr_generator.types.ECC
+import io.mosip.pixelpass.PixelPass
+import io.mosip.pixelpass.types.QRConfig
 
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                val bmp = PixelPass().generateQRBitmap(s.toString(), ECC.M)
+                val bmp = PixelPass().generateQRBitmap(s.toString(), QRConfig())
                 findViewById<ImageView>(R.id.qrImage).setImageBitmap(bmp)
                 findViewById<ImageView>(R.id.qrImage).invalidate()
             }

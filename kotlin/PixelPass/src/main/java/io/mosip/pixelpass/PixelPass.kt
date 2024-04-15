@@ -1,8 +1,8 @@
-package io.mosip.qr_generator
+package io.mosip.pixelpass
 
 import android.graphics.Bitmap
-import io.mosip.qr_generator.types.QRConfig
-import io.mosip.qr_generator.zlib.ZLib
+import io.mosip.pixelpass.types.QRConfig
+import io.mosip.pixelpass.zlib.ZLib
 import nl.minvws.encoding.Base45
 
 class PixelPass {

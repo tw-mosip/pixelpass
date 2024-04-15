@@ -8,8 +8,9 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.runs
-import io.mosip.qr_generator.types.ECC
-import io.mosip.qr_generator.types.ImageType
+import io.mosip.pixelpass.PixelPassQR
+import io.mosip.pixelpass.types.ECC
+import io.mosip.pixelpass.types.ImageType
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test

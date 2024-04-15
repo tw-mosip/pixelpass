@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 android {
-    namespace = "io.mosip.qr_generator"
+    namespace = "io.mosip.pixelpass"
     compileSdk = 34
 
     defaultConfig {

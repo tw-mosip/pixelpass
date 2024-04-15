@@ -1,4 +1,4 @@
-package io.mosip.qr_generator.types
+package io.mosip.pixelpass.types
 
 import io.nayuki.qrcodegen.QrCode
 

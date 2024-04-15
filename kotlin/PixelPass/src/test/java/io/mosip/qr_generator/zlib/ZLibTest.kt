@@ -1,6 +1,7 @@
 package io.mosip.qr_generator.zlib
 
 import io.mockk.clearAllMocks
+import io.mosip.pixelpass.zlib.ZLib
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test

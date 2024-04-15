@@ -1,6 +1,6 @@
-package io.mosip.qr_generator.zlib
+package io.mosip.pixelpass.zlib
 
-import io.mosip.qr_generator.shared.DEFAULT_ZLIB_COMPRESSION_LEVEL
+import io.mosip.pixelpass.shared.DEFAULT_ZLIB_COMPRESSION_LEVEL
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.util.zip.Deflater

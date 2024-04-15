@@ -1,14 +1,14 @@
-package io.mosip.qr_generator
+package io.mosip.pixelpass
 
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Base64
 import android.util.Base64.DEFAULT
-import io.mosip.qr_generator.shared.QR_BORDER
-import io.mosip.qr_generator.shared.QR_QUALITY
-import io.mosip.qr_generator.shared.QR_SCALE
-import io.mosip.qr_generator.types.ECC
-import io.mosip.qr_generator.types.ImageType
+import io.mosip.pixelpass.shared.QR_BORDER
+import io.mosip.pixelpass.shared.QR_QUALITY
+import io.mosip.pixelpass.shared.QR_SCALE
+import io.mosip.pixelpass.types.ECC
+import io.mosip.pixelpass.types.ImageType
 import io.nayuki.qrcodegen.*
 import java.io.ByteArrayOutputStream
 import java.util.Objects

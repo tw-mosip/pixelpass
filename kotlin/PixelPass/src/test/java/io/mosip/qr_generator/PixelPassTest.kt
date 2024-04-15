@@ -5,10 +5,12 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
-import io.mosip.qr_generator.types.ECC
-import io.mosip.qr_generator.types.ImageType
-import io.mosip.qr_generator.types.QRConfig
-import io.mosip.qr_generator.zlib.ZLib
+import io.mosip.pixelpass.PixelPass
+import io.mosip.pixelpass.PixelPassQR
+import io.mosip.pixelpass.types.ECC
+import io.mosip.pixelpass.types.ImageType
+import io.mosip.pixelpass.types.QRConfig
+import io.mosip.pixelpass.zlib.ZLib
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test

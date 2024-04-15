@@ -1,4 +1,4 @@
-package io.mosip.qr_generator.shared
+package io.mosip.pixelpass.shared
 
 const val QR_SCALE = 15
 const val QR_BORDER = 3

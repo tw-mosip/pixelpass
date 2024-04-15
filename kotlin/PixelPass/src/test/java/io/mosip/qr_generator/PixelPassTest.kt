@@ -31,7 +31,7 @@ class PixelPassTest{
         val data = "test"
         val expected = "data:image/png;base64,abc";
         val config = QRConfig(ECC.M,ImageType.PNG)
-        val actual = PixelPass().generateQRBase64(data,config)
+        val actual = PixelPass().generateQRBase64Image(data,config)
         Assert.assertNotNull(actual)
         Assert.assertEquals(expected,actual)
     }
@@ -47,7 +47,33 @@ class PixelPassTest{
         every { anyConstructed<PixelPassQR>().toBitmapImage() } returns expected
 
         val data = "test"
-        val actual = PixelPass().generateQRBitmap(data,ECC.M)
+        val actual = PixelPass().generateQRBitmap(data, QRConfig(ECC.M))
+        Assert.assertNotNull(actual)
+        Assert.assertEquals(expected,actual)
+    }
+    @Test
+    fun `should return encoded data for given data without header`(){
+        mockkConstructor(ZLib::class)
+        mockkConstructor(PixelPassQR::class)
+
+        val expected = "NCFKVPV0QSIP600GP5L0"
+
+        val data = "hello"
+        val actual = PixelPass().generateQRData(data, QRConfig())
+        Assert.assertNotNull(actual)
+        Assert.assertEquals(expected,actual)
+    }
+
+    @Test
+    fun `should return encoded data for given data with given header`(){
+        mockkConstructor(ZLib::class)
+        mockkConstructor(PixelPassQR::class)
+
+        val expected = "HEADER://NCFKVPV0QSIP600GP5L0"
+
+        val data = "hello"
+        val header = "HEADER://"
+        val actual = PixelPass().generateQRData(data, QRConfig(header = header))
         Assert.assertNotNull(actual)
         Assert.assertEquals(expected,actual)
     }

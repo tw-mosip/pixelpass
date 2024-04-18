@@ -9,12 +9,18 @@ import {
 const b45 = require("base45-web");
 const pako = require('pako');
 import QRCode from 'qrcode';
-
-
+const cbor = require('cbor');
 export function decodeData(base45Data) {
     const decodedBase45Data = b45.decode(base45Data);
     const compressedData = pako.inflate(decodedBase45Data);
-    return new TextDecoder().decode(compressedData);
+    const textData =  new TextDecoder().decode(compressedData);
+    try{
+        const decodedCBORData = cbor.decode(textData);
+        if (decodedCBORData) return JSON.stringify(decodedCBORData)
+        return textData
+    }catch (e){
+        return textData
+    }
 }
 
 export function generateQRData(data, header= "" ) {

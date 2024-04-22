@@ -42,7 +42,7 @@ import UIKit
         return base45EncodedString
     }
     
-     public func generateQRCode(from string: String, ecc: ECC, header: String = "") -> Data? {
+     public func generateQRCode(from string: String, ecc: ECC = ECC.L, header: String = "") -> Data? {
          var qrText = encode(string)
          if qrText == nil {
              return nil

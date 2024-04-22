@@ -10,7 +10,7 @@ const b45 = require("base45-web");
 const pako = require('pako');
 import QRCode from 'qrcode';
 
-const cbor = require('cbor');
+const cbor = require('cbor-web');
 
 export function decodeData(base45Data) {
     const decodedBase45Data = b45.decode(base45Data);

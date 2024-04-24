@@ -19,8 +19,27 @@ test("should return decoded data for given QR data in cbor", () => {
     expect(actual).toBe(expected);
 });
 
-//todo :: document exceptions
-//todo :: write test for same
+
+test("should throw error if given data is null or undefined for encoding", () => {
+    expect(()=>generateQRData(null)).toThrowError("Cannot read properties of null (reading 'length')");
+    expect(()=>generateQRData(undefined)).toThrowError("Cannot read properties of undefined (reading 'length')");
+});
+test("should throw error if given data is invalid for decoding", () => {
+    expect(()=>decode("NCFKVPV0QSIP600GP5L00")).toThrowError("incorrect data check");
+});
+test("should throw error if given data is null or undefined", () => {
+    expect(()=>decode(null)).toThrowError("utf8StringArg is null or undefined.");
+    expect(()=>decode(undefined)).toThrowError("utf8StringArg is null or undefined.");
+});
+test("should throw error if given data length is bad", () => {
+    expect(()=>decode("1")).toThrowError("utf8StringArg has incorrect length.");
+    expect(()=>decode("1234")).toThrowError("utf8StringArg has incorrect length.");
+});
+test("should throw error if given data is invalid", () => {
+    expect(()=>decode("^1")).toThrowError("Invalid character at position 0.");
+    expect(()=>decode("1^")).toThrowError("Invalid character at position 1.");
+    expect(()=>decode("0123456789^")).toThrowError("Invalid character at position 10.");
+});
 test("should return encoded QR data for data", () => {
     const expected = "NCFKVPV0QSIP600GP5L0";
     const  data = "hello";

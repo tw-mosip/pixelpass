@@ -12,8 +12,7 @@ todo :: add maven link
 
 ## APIs
 
-`generateQRCode( data, config )`
-
+`generateQRBase64Image( data, ecc, header )`
 
 `data` - Data needs to be compressed and encoded
 

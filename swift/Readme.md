@@ -19,12 +19,12 @@ To include PixelPass in your Swift project:
 
 ## API Reference
 
-### `generateQRCode(from: String, ecc: ECC = .L, header: String = "")`
+### `generateQRCode(data: String, ecc: ECC = .L, header: String = "")`
 
 Generates a QR code from the provided string. The method first compresses and encodes the input string, then creates a QR code with an optional error correction level and header. The QR code is returned as PNG data.
 
 **Parameters:**
-- `from`: The string to encode and generate a QR code from.
+- `data`: The string to encode and generate a QR code from.
 - `ecc`: Error correction level with a default of `.L`.
 - `header`: A string prepended to the encoded data, optional.
 
@@ -35,17 +35,17 @@ Generates a QR code from the provided string. The method first compresses and en
 
 ```swift
 let pixelPass = PixelPass()
-if let qrCodeData = pixelPass.generateQRCode(from: "Hello, World!", ecc: .M, header: "HDR") {
+if let qrCodeData = pixelPass.generateQRCode(data: "Hello, World!", ecc: .M, header: "HDR") {
     // Use qrCodeData in your application (e.g., display in an ImageView)
 }
 ```
 
-### `decode(_ input: String) -> Data?`
+### `decode(data: String) -> Data?`
 
 Decodes a given Base45 encoded string which is expected to be Zlib compressed. This method handles the decompression and Base45 decoding of the input string.
 
 **Parameters:**
-- `input`: The Base45 encoded and Zlib compressed string.
+- `data`: The Base45 encoded and Zlib compressed string.
 
 **Returns:**
 - The decompressed and decoded data as a `Data` object, or `nil` if an error occurs.

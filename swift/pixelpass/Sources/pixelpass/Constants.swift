@@ -1,10 +1,3 @@
-//
-//  Constants.swift
-//
-//
-//  Created by Abhishek Paul on 22/04/24.
-//
-
 import Foundation
  struct Constants{
      static let headerSize = 2

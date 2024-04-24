@@ -31,7 +31,7 @@ class PixelPassTests: XCTestCase {
     
     func testDecodeValidInput() {
         let inputString = "V7F0YUV0QBNP:AAT8QZPP+AAV00./JG2"
-        let decodedData = pixelPass.decode(inputString)
+        let decodedData = pixelPass.decode(data: inputString)
         
         let expectedDecodedString="Hello, World!"
         XCTAssertNotNil(decodedData, "Decoding should succeed for valid encoded input.")
@@ -42,7 +42,7 @@ class PixelPassTests: XCTestCase {
     
     func testDecodeInvalidInput() {
         let invalidBase45String = "#$%^&*()_+"
-        let decodedData = pixelPass.decode(invalidBase45String)
+        let decodedData = pixelPass.decode(data: invalidBase45String)
         XCTAssertNil(decodedData, "Decode should return nil for invalid Base45 input.")
     }
     
@@ -50,7 +50,7 @@ class PixelPassTests: XCTestCase {
         // Test case for non-empty string
         let inputString = "Hello, this is a test string for PixelPass encoding and decoding."
         if let encoded = pixelPass.encode(inputString),
-           let decodedData = pixelPass.decode(encoded),
+           let decodedData = pixelPass.decode(data: encoded),
            let decodedString = String(data: decodedData, encoding: .utf8) {
             XCTAssertEqual(decodedString, inputString, "The decoded string should match the original input string.")
         } else {
@@ -64,13 +64,13 @@ class PixelPassTests: XCTestCase {
     
     func testGenerateQRCode() {
         let inputString = "Test QR Code generation"
-        let qrCodeImage = pixelPass.generateQRCode(from: inputString,ecc: ECC.M)
+        let qrCodeImage = pixelPass.generateQRCode( data: inputString,ecc: ECC.M)
        
         XCTAssertNotNil(qrCodeImage, "QR Code generation should succeed and return a non-nil UIImage.")
     }
     
     func testDecodeErrorHandling() {
         let incorrectBase45String = "This is not a Base45 string"
-        XCTAssertNil(pixelPass.decode(incorrectBase45String), "Decode should return nil for incorrect Base45 encoded strings.")
+        XCTAssertNil(pixelPass.decode(data: incorrectBase45String), "Decode should return nil for incorrect Base45 encoded strings.")
     }
 }

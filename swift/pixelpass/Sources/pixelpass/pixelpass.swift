@@ -9,9 +9,9 @@ import UIKit
     {
         
     }
-    public func decode(_ input: String) -> Data? {
+    public func decode(data: String) -> Data? {
         do {
-            let base45DecodedData = try input.fromBase45()
+            let base45DecodedData = try data.fromBase45()
             guard let decompressedData = Zlib().decompress(base45DecodedData) else {
                 print("Error decompressing data")
                 return nil
@@ -42,8 +42,8 @@ import UIKit
         return base45EncodedString
     }
     
-     public func generateQRCode(from string: String, ecc: ECC = ECC.L, header: String = "") -> Data? {
-         var qrText = encode(string)
+     public func generateQRCode(data: String, ecc: ECC = ECC.L, header: String = "") -> Data? {
+         var qrText = encode(data)
          if qrText == nil {
              return nil
          } else {

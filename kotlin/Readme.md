@@ -12,14 +12,8 @@ todo :: add maven link
 
 ## APIs
 
-`generateQRBase64Image( data, ecc, header )`
-
-
-returns a base64 encoded PNG image with header prepended if provided.
-
 `generateQRCode( data, config )`
 
-`data` - Data needs to be compressed and encoded
 
 `data` - Data needs to be compressed and encoded
 

@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.qrcodegen)
     implementation(libs.base45)
+    implementation(libs.cbor)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

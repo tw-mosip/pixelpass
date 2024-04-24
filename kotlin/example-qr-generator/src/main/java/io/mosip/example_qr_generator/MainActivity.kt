@@ -14,7 +14,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import io.mosip.pixelpass.PixelPass
-import io.mosip.pixelpass.types.QRConfig
 
 
 class MainActivity : ComponentActivity() {
@@ -29,10 +28,9 @@ class MainActivity : ComponentActivity() {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                val config = QRConfig()
                 val pixelPass  = PixelPass()
-                qrData = pixelPass.generateQRData(s.toString(), config)
-                val bmp = pixelPass.generateQRBitmap(s.toString(), config)
+//                qrData = pixelPass.generateQRCode(s.toString(), config)
+                val bmp = pixelPass.generateQRCode(s.toString())
                 findViewById<ImageView>(R.id.qrImage).setImageBitmap(bmp)
                 findViewById<ImageView>(R.id.qrImage).invalidate()
             }
@@ -57,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
 
         (findViewById<View>(R.id.btn) as Button).setOnClickListener {
-            decodeT.text = PixelPass().decodeData(qrData)
+            decodeT.text = PixelPass().decode(qrData)
         }
 
 

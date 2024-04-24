@@ -13,6 +13,7 @@ material = "1.10.0"
 qrcodegen = "1.8.0"
 base45 = "0.0.3"
 mockk = "1.13.10"
+cbor = "0.9"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,11 +35,10 @@ material = { group = "com.google.android.material", name = "material", version.r
 qrcodegen = { group = "io.nayuki", name = "qrcodegen", version.ref = "qrcodegen" }
 base45 = { group = "io.github.ehn-digital-green-development", name = "base45", version.ref = "base45" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+cbor = { group = "co.nstant.in", name = "cbor", version.ref = "cbor" }
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
-

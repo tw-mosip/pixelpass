@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Example</title>
+</head>
+<body>
+Paste your VC JSON here
+<textarea rows="20" cols="30" id="json-text" oninput="generateQR()"></textarea>
+<img id="qr-image" src="">
+</body>
+
+<script>
+  function generateQR(){
+    let jsonText = document.getElementById("json-text").value
+      try {
+          let jsonString = JSON.stringify(JSON.parse(jsonText));
+          console.log(jsonString)
+          let xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+              if (this.readyState === 4 && this.status === 200) {
+                  // Typical action to be performed when the document is ready:
+                  // document.getElementById("demo").innerHTML = xhttp.responseText;
+                  console.log(xhttp.responseText)
+              }
+          };
+          xhttp.open("POST", 'qr', true);
+          xhttp.send(jsonString);
+      }catch (e){
+          alert("Invalid JSON")
+      }
+
+  }
+</script>
+
+</html>

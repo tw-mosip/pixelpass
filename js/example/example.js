@@ -1,11 +1,12 @@
+const open = require('open');
 const express = require('express')
-const bodyParser = require('body-parser')
 const path = require('path');
-const {generateQRCode} = require("../src/PixelPass");
+const {generateQRCode} = require('../src')
+
 const app = express()
 const port = 3000
 
-app.use(bodyParser.text({type: "*/*"}));
+app.use(express.json())
 app.get('/', (req, res) => {
     const options = {
         root: path.join(__dirname)
@@ -15,10 +16,11 @@ app.get('/', (req, res) => {
 
 app.post('/qr', (req, res) => {
     let json = req.body
-    // res.send(json)
-    res.send(generateQRCode(json))
+    console.log("JSON RECEIVED : ", json)
+    generateQRCode(JSON.stringify(json)).then(qr=> res.send(qr))
 })
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
+    open('http://localhost:3000');
 })

@@ -11,6 +11,12 @@
 
 [npm](https://www.npmjs.com/package/@mosip/pixelpass)
 
+## Example
+
+To run the example app copy the below command and paste it to your terminal.
+
+`git clone https://github.com/tw-mosip/pixelpass.git && cd pixelpass && git checkout example-app && cd js && npm i && cd example && npm i && npm start`
+
 ## APIs
 `generateQRData( data, header )`
 

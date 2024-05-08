@@ -3,15 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>QR Example</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-Paste your VC JSON here
-<textarea rows="20" cols="30" id="json-text" oninput="generateQR()"></textarea>
-<img id="qr-image" src="" download>
+<h1>PixelPass Example QR Generator App</h1>
+<div class="container">
+    <div style="flex: 1; padding: 20px;height: 650px">
+        <textarea id="json-text" oninput="generateQR()" placeholder="Paste Your JSON Here"></textarea>
+    </div>
+    <div style="flex: 1; padding: 20px;height: 652px">
+        <div style="border: 1px solid black; height: 654px">
+            <img id="qr-image" src="" height="650px">
+        </div>
+    </div>
+</div>
+<div id="download-section" style="visibility: hidden">
 <a download="QR.PNG"  id='download' href="" title="ImageName">
-    click me
+    <button>Download</button>
 </a>
-
+</div>
 </body>
 
 <script>
@@ -26,6 +36,7 @@ Paste your VC JSON here
                 }
                 document.getElementById("qr-image").src = xhttp.responseText;
                 document.getElementById("download").href = xhttp.responseText;
+                document.getElementById("download-section").style.visibility = "visible"
             };
             xhttp.open("POST", 'qr', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

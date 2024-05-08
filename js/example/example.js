@@ -14,6 +14,13 @@ app.get('/', (req, res) => {
     res.sendFile("index.html", options)
 })
 
+app.get('/styles.css', (req, res) => {
+    const options = {
+        root: path.join(__dirname)
+    };
+    res.sendFile("stylesheet.css", options)
+})
+
 app.post('/qr', (req, res) => {
     let json = req.body
     console.log("JSON RECEIVED : ", json)

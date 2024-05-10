@@ -1,0 +1,19 @@
+{
+  "name": "rn-pixelpass",
+  "homepage": ".",
+  "version": "1.0.0",
+  "description": "Qr management",
+  "main": "babel.config.js",
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abhishek Paul",
+  "license": "MIT",
+  "dependencies": {
+    "react-native": "^0.74.1"
+  }
+}

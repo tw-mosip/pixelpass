@@ -12,6 +12,9 @@
 [npm](https://www.npmjs.com/package/@mosip/pixelpass)
 
 ## Example
+Prerequisites
+* [nodejs](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs)
+* [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 To run the example app copy the below command and paste it to your terminal.
 

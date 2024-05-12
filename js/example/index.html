@@ -19,7 +19,7 @@
 </div>
 <h3 id="version" style="visibility: hidden"></h3>
 <div id="download-section" style="visibility: hidden">
-    <a download="QR.PNG" id='download' href="" title="ImageName">
+    <a id='download' href="" title="ImageName">
         <button>Download</button>
     </a>
     <h3 id="error" style="visibility: hidden">Invalid JSON</h3>
@@ -41,6 +41,7 @@
                 document.getElementById("qr-image").src = response[1];
                 document.getElementById("download").href = response[1];
                 document.getElementById("version").innerText = `Current QR version is ${response[0]}`;
+                document.getElementById("download").download = `QR_v${response[0]}.PNG`
                 document.getElementById("version").style.visibility = "visible";
                 document.getElementById("qr-image").style.visibility = "visible";
                 document.getElementById("download-section").style.visibility = "visible"

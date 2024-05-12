@@ -17,6 +17,7 @@
         </div>
     </div>
 </div>
+<h3 id="version" style="visibility: hidden"></h3>
 <div id="download-section" style="visibility: hidden">
     <a download="QR.PNG" id='download' href="" title="ImageName">
         <button>Download</button>
@@ -36,8 +37,11 @@
                 if (this.readyState === 4 && this.status === 200) {
                     console.log(xhttp.responseText)
                 }
-                document.getElementById("qr-image").src = xhttp.responseText;
-                document.getElementById("download").href = xhttp.responseText;
+                let response = JSON.parse(xhttp.responseText)
+                document.getElementById("qr-image").src = response[1];
+                document.getElementById("download").href = response[1];
+                document.getElementById("version").innerText = `Current QR version is ${response[0]}`;
+                document.getElementById("version").style.visibility = "visible";
                 document.getElementById("qr-image").style.visibility = "visible";
                 document.getElementById("download-section").style.visibility = "visible"
             };
@@ -47,6 +51,7 @@
         } catch (e) {
             document.getElementById("error").style.visibility = "visible";
             document.getElementById("qr-image").style.visibility = "hidden";
+            document.getElementById("version").style.visibility = "hidden";
             document.getElementById("download-section").style.visibility = "hidden"
         }
     }

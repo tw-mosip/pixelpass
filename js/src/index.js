@@ -29,9 +29,7 @@ async function generateQRCode(data, ecc = DEFAULT_ECC_LEVEL, header = "") {
             light: COLOR_WHITE
         }
     }
-    let version = QRCode.create(base45Data,opts).version
-    let qr = await QRCode.toDataURL(base45Data, opts);
-    return [version,qr];
+    return QRCode.toDataURL(base45Data, opts);
 }
 
 function decode(data) {

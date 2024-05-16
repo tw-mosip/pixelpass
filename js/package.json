@@ -9,8 +9,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
-    "verify": "npm test",
-    "start": "node example/example.js"
+    "verify": "npm test"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

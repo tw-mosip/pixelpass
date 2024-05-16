@@ -8,15 +8,10 @@ on:
         required: false
         default: 'Triggered for Updates'
         type: string
-  push:
-    branches:
-      - release*
-      - master
-      - develop*
 
 jobs:
   maven-publish:
-    if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' &&  github.event_name == 'workflow_dispatch' }}"
+    if: "${{ !contains(github.ref, 'master') }}"
     uses: mosip/kattu/.github/workflows/maven-publish-android.yml@master
     with:
       SERVICE_LOCATION: 'kotlin'

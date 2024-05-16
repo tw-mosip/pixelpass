@@ -8,9 +8,6 @@ on:
         required: false
         default: 'Triggered for Updates'
         type: string
-  
-  pull_request:
-    types: [opened, reopened, synchronize]
 
 jobs:
   maven-publish:

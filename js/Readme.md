@@ -19,7 +19,7 @@ Prerequisites
 To run the example app copy the below command and paste it to your terminal.
 
 ```
-git clone https://github.com/mosip/pixelpass.git && cd pixelpass && git checkout example-app && cd js && npm i && cd example && npm i && npm start
+git clone https://github.com/mosip/pixelpass.git && cd pixelpass && git checkout develop && cd js && npm i && cd example && npm i && npm start
 ```
 
 ## APIs

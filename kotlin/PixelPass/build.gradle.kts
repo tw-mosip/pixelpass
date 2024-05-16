@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.config.JvmTarget
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    `maven-publish`
 }
 android {
     namespace = "io.mosip.pixelpass"
@@ -42,4 +43,14 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation("org.json:json:20140107")
+}
+
+tasks {
+    register<Wrapper>("wrapper") {
+        gradleVersion = "8.4"
+    }
+}
+
+apply {
+    from("publish-artifact.gradle")
 }

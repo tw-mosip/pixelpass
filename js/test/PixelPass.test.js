@@ -1,6 +1,6 @@
-import {decode, generateQRCode, generateQRData} from "../src";
-import expect from "expect";
-import {ECC} from "../src/types/ECC";
+const {decode, generateQRCode, generateQRData} = require("../src")
+const  {expect}  =require("expect")
+const  {ECC} =require("../src/types/ECC");
 
 test("should return decoded data for given QR data", () => {
     const data = "NCFKVPV0QSIP600GP5L0";

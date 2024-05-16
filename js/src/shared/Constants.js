@@ -1,10 +1,9 @@
-import {ECC} from "../types/ECC";
+const ECC = require("../types/ECC").ECC
 
-export const DEFAULT_ZLIB_COMPRESSION_LEVEL = 9
-
-export const DEFAULT_ECC_LEVEL = ECC.L
-export const COLOR_BLACK = "#000000"
-export const COLOR_WHITE = "#FFFFFF"
-export const DEFAULT_QR_SCALE = 10
-export const DEFAULT_QR_BORDER = 3
-export const DEFAULT_QR_QUALITY = 1
+exports.DEFAULT_ZLIB_COMPRESSION_LEVEL = 9
+exports.DEFAULT_ECC_LEVEL = ECC.L
+exports.COLOR_BLACK = "#000000"
+exports.COLOR_WHITE = "#FFFFFF"
+exports.DEFAULT_QR_SCALE = 10
+exports.DEFAULT_QR_BORDER = 3
+exports.DEFAULT_QR_QUALITY = 1

@@ -2,5 +2,5 @@ fileignoreconfig:
 - filename: kotlin/PixelPass/publish-artifact.gradle
   checksum: ce0f6363a20342b3ef282880e77925a5e51b693903d3220597802e572a34832a
 - filename: kotlin/.github/workflows/android-artifact-build.yml
-  checksum: 33a7e72a1c49f88a0419e4361d24cb2349366cf6f044536a326d1c7e721c8ec0
+  checksum: 94c202278dff6f050a6a0a42a5c86c348f6393c08d502bc13e2d81bd1c8bf8cc
 version: ""

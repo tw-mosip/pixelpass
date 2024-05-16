@@ -11,8 +11,6 @@ on:
   
   pull_request:
     types: [opened, reopened, synchronize]
-    branches:
-    - develop
 
 jobs:
   maven-publish:
@@ -20,7 +18,7 @@ jobs:
     uses: mosip/kattu/.github/workflows/maven-publish-android.yml@master
     with:
       SERVICE_LOCATION: 'kotlin'
-      ANDROID_SERVICE_LOCATION: 'vci-client'
+      ANDROID_SERVICE_LOCATION: 'PixelPass'
       JAVA_VERSION: 21
     secrets:
       OSSRH_USER: ${{ secrets.OSSRH_USER }}

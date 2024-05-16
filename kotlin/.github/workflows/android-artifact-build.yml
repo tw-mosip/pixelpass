@@ -19,8 +19,9 @@ jobs:
     if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' &&  github.event_name == 'workflow_dispatch' }}"
     uses: mosip/kattu/.github/workflows/maven-publish-android.yml@master
     with:
-      SERVICE_LOCATION: '.'
-      ANDROID_SERVICE_LOCATION: 'kotlin'
+      SERVICE_LOCATION: 'kotlin'
+      ANDROID_SERVICE_LOCATION: 'vci-client'
+      JAVA_VERSION: 21
     secrets:
       OSSRH_USER: ${{ secrets.OSSRH_USER }}
       OSSRH_URL: ${{secrets.OSSRH_SNAPSHOT_URL }}

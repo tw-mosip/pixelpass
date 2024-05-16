@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: kotlin/PixelPass/publish-artifact.gradle
+  checksum: ce0f6363a20342b3ef282880e77925a5e51b693903d3220597802e572a34832a
+version: ""

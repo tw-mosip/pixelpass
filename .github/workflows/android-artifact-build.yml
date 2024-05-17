@@ -8,19 +8,15 @@ on:
         required: false
         default: 'Triggered for Updates'
         type: string
-  push:
-    branches:
-      - release*
-      - master
-      - develop*
 
 jobs:
   maven-publish:
-    if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' &&  github.event_name == 'workflow_dispatch' }}"
+    if: "${{ !contains(github.ref, 'master') }}"
     uses: mosip/kattu/.github/workflows/maven-publish-android.yml@master
     with:
-      SERVICE_LOCATION: '.'
-      ANDROID_SERVICE_LOCATION: 'kotlin'
+      SERVICE_LOCATION: 'kotlin'
+      ANDROID_SERVICE_LOCATION: 'PixelPass'
+      JAVA_VERSION: 21
     secrets:
       OSSRH_USER: ${{ secrets.OSSRH_USER }}
       OSSRH_URL: ${{secrets.OSSRH_SNAPSHOT_URL }}

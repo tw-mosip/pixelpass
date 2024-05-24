@@ -47,7 +47,7 @@ dependencies {
 
 tasks {
     register<Wrapper>("wrapper") {
-        gradleVersion = "7.5"
+        gradleVersion = "8.5"
     }
 }
 

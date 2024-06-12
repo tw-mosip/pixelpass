@@ -6,3 +6,7 @@ fun String.decodeHex(): ByteArray {
         .map { it.toInt(16).toByte() }
         .toByteArray()
 }
+
+fun Int.isNegative(): Boolean {
+    return this < 0
+}

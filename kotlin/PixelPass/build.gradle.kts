@@ -68,3 +68,6 @@ tasks.register<Jar>("jarRelease") {
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
 }
 apply(from = "publish-artifact.gradle")
+tasks.register("generatePom") {
+    dependsOn("generatePomFileForAarPublication", "generatePomFileForJarReleasePublication")
+}

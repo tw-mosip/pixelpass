@@ -32,10 +32,9 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+//    implementation(libs.androidx.core.ktx)
+//    implementation(libs.androidx.appcompat)
+//    implementation(libs.material)
     implementation(libs.qrcodegen)
     implementation(libs.base45)
     implementation(libs.cbor)
@@ -51,6 +50,21 @@ tasks {
     }
 }
 
-apply {
-    from("publish-artifact.gradle")
+tasks.register<Jar>("jarRelease") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn("assembleRelease")
+    from("build/intermediates/javac/release/classes") {
+        include("**/*.class")
+    }
+    from("build/tmp/kotlin-classes/release") {
+        include("**/*.class")
+    }
+    manifest {
+        attributes["Implementation-Title"] = project.name
+        attributes["Implementation-Version"] = "1.0-SNAPSHOT"
+    }
+    archiveBaseName.set("${project.name}-release")
+    archiveVersion.set("1.0-SNAPSHOT")
+    destinationDirectory.set(layout.buildDirectory.dir("libs"))
 }
+apply(from = "publish-artifact.gradle")

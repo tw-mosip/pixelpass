@@ -1,4 +1,4 @@
-name: Android Artifact Build
+name: Kotlin Artifacts Build
 
 on:
   workflow_dispatch:

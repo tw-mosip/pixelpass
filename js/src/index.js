@@ -20,7 +20,7 @@ function generateQRData(data, header = "") {
         const cborEncodedData = cbor.encode(parsedData);
         compressedData = pako.deflate(cborEncodedData, {level: DEFAULT_ZLIB_COMPRESSION_LEVEL});
     } catch (e) {
-        console.log("Data is not JSON");
+        console.error("Data is not JSON");
         compressedData = pako.deflate(data, {level: DEFAULT_ZLIB_COMPRESSION_LEVEL});
     } finally {
         b45EncodedData = b45.encode(compressedData).toString();

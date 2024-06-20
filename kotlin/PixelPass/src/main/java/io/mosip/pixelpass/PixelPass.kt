@@ -2,17 +2,20 @@ package io.mosip.pixelpass
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.util.Log
 import co.nstant.`in`.cbor.CborDecoder
+import co.nstant.`in`.cbor.CborEncoder
 import io.mosip.pixelpass.cbor.Utils
 import io.mosip.pixelpass.shared.QR_BORDER
 import io.mosip.pixelpass.shared.QR_SCALE
-import io.mosip.pixelpass.shared.decodeHex
 import io.mosip.pixelpass.types.ECC
 import io.mosip.pixelpass.zlib.ZLib
 import io.nayuki.qrcodegen.QrCode
 import nl.minvws.encoding.Base45
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.Objects
 
 class PixelPass {
@@ -24,22 +27,48 @@ class PixelPass {
 
     fun decode(data: String): String {
         val decodedBase45Data = Base45.getDecoder().decode(data)
-        val decompressedData = String(ZLib().decode(decodedBase45Data))
+        val decompressedData = ZLib().decode(decodedBase45Data)
         return try {
-            val cborDecodedData = CborDecoder(ByteArrayInputStream(decompressedData.decodeHex())).decode()[0]
-            (Utils().toJson(cborDecodedData) as JSONObject ).toString().replace("\\","")
+            val cborDecodedData = CborDecoder(ByteArrayInputStream(decompressedData)).decode()[0]
+
+            val json = Utils().toJson(cborDecodedData)
+            if (json.toString().startsWith('[') && json.toString().endsWith(']'))
+                ( json as JSONArray ).toString().replace("\\","")
+            else
+                ( json as JSONObject ).toString().replace("\\","")
         }catch (_: Exception){
-            decompressedData
+            String(decompressedData)
         }
     }
 
      fun generateQRData(
         data: String,
-        header: String
+        header: String = ""
     ): String {
-        val compressedData = ZLib().encode(data.toByteArray())
-        val base45Data = String(Base45.getEncoder().encode(compressedData))
-        return (header + base45Data)
+         val parsedData: Any?
+         var compressedData = byteArrayOf()
+         var b45EncodedData = ""
+         try {
+             if (data.startsWith('[') && data.endsWith(']')) {
+                 parsedData = JSONArray(data)
+             }
+             else {
+                 parsedData = JSONObject(data)
+             }
+             val toDataItem = Utils().toDataItem(parsedData)
+
+             val baos = ByteArrayOutputStream()
+             CborEncoder(baos).nonCanonical().encode(toDataItem)
+             compressedData = ZLib().encode(baos.toByteArray())
+
+         }catch (e: Exception){
+             Log.e("PixelPass",e.toString())
+             compressedData = ZLib().encode(data.toByteArray())
+         }finally {
+             b45EncodedData = String(Base45.getEncoder().encode(compressedData))
+         }
+
+        return (header + b45EncodedData)
     }
     private fun toBitmap(qrCode: QrCode): Bitmap {
         Objects.requireNonNull(qrCode)

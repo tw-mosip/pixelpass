@@ -31,6 +31,9 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.main)
         val textF = findViewById<View>(R.id.textF) as EditText
 
+        val data = "{\"str\":\"tiger\",\"int\":10,\"float\":10.01,\"nulltype\":null,\"bool\":true,\"arry\":[],\"obj\":{}}"
+        PixelPass().generateQRData(data)
+
         textF.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}

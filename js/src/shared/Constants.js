@@ -8,3 +8,4 @@ exports.DEFAULT_QR_SCALE = 10
 exports.DEFAULT_QR_BORDER = 3
 exports.DEFAULT_QR_QUALITY = 1
 exports.CLAIM_169 = "169"
+exports.HEX_ENCODING = "hex"

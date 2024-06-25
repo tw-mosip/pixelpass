@@ -6,16 +6,11 @@ const {
   COLOR_WHITE,
   DEFAULT_ZLIB_COMPRESSION_LEVEL,
   DEFAULT_ECC_LEVEL,
-  CLAIM_169,
-  HEX_ENCODING,
 } = require("./shared/Constants");
 const QRCode = require("qrcode");
 const b45 = require("base45-web");
 const pako = require("pako");
 const cbor = require("cbor-web");
-const cose = require("cose-js");
-const NoFilter = require("nofilter");
-const Promise = require('any-promise');
 
 
 function generateQRData(data, header = "") {
@@ -53,49 +48,23 @@ function decode(data) {
   }
 }
 
-async function getCWT(jsonData, claimMap, encryptionKey, algorithm) {
+function getMappedCborData(jsonData, claimMap) {
   const payload = new Map();
   for (const param in jsonData) {
     const key = claimMap[param] ? claimMap[param] : param;
     const value = jsonData[param];
     payload.set(key, value);
   }
-
-  // const claim169 = new Map();
-  // claim169.set(CLAIM_169, payload);
-
-  //TODO:: See if this bound is required
-  const cborEncodedData = cbor.encode(payload);
-
-  const headers = {
-    p: {alg: algorithm},
-    u: {kid: encryptionKey.kid},
-  };
-  const recipent = {
-    key: encryptionKey.k,
-  };
-
-  return (await cose.mac.create(headers, cborEncodedData, recipent)).toString(HEX_ENCODING);
+  return cbor.encode(payload);
 }
 
-function decodeCWT (cwt, claimMap, decryptionKey) {
-  const cwtBuffer = Buffer.from(cwt,HEX_ENCODING)
-  return new Promise((resolve, reject) => {
-    const cborDecoder = new cbor.Decoder({'tags': getTags(decryptionKey)});
-    const noFilter = new NoFilter(cwtBuffer);
-    noFilter.pipe(cborDecoder);
-    cborDecoder.on('data', (value) => {
-      value.then((claims) => {
-        resolve(translateToJSON(claims,claimMap));
-      });
-    });
-  });
+function decodeMappedCborData (cborData, claimMap) {
+  const jsonData = cbor.decode(cborData)
+  return translateToJSON(jsonData,claimMap)
 }
 
 function translateToJSON (claims,claimMap) {
   const result = {};
-
-  //TODO:: Need 169??
   claims.forEach((value, param, _) => {
     const key = claimMap[param] ? claimMap[param] : param;
     result[key] = value;
@@ -103,21 +72,11 @@ function translateToJSON (claims,claimMap) {
   return result;
 }
 
-function getTags (key) {
-  const tags = {};
-  tags[cose.mac.MAC0Tag] = async (claim) => {
-    const cborEncodedClaim = cbor.encode(claim);
-    const decodedCwtMap = await cose.mac.read(cborEncodedClaim,key.k)
-
-    return await cbor.decodeFirst(decodedCwtMap)
-  };
-  return tags;
-}
 
 module.exports = {
   generateQRData,
   generateQRCode,
   decode,
-  getCWT,
-  decodeCWT
+  getMappedCborData,
+  decodeMappedCborData
 };

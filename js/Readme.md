@@ -68,10 +68,10 @@ Returns a base64 encoded PNG image.
 ```javascript
 import { generateQRData } from '@mosip/pixelpass';
 
-const JSONString = "{\"name\":\"Steve\",\"id\":\"1\",\"l_name\":\"jobs\"}";
+const jsonString = "{\"name\":\"Steve\",\"id\":\"1\",\"l_name\":\"jobs\"}";
 const header = "jsonstring";
 
-const encodedCBORData = generateQRData(JSONString, header);
+const encodedCBORData = generateQRData(jsonString, header);
 
 // header defaults to empty string if not passed.
 ```
@@ -102,7 +102,7 @@ import { getMappedCborData } from '@mosip/pixelpass';
 const jsonData = {"name": "Jhon", "id": "207", "l_name": "Honay"};
 const mapper = {"id": "1", "name": "2", "l_name": "3"};
 
-const byteBuffer = getMappedCborData(JSONData, mapper);
+const byteBuffer = getMappedCborData(jsonData, mapper);
 
 const cborEncodedString = byteBuffer.toString('hex');
 ```

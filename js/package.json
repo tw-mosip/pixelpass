@@ -8,7 +8,7 @@
   "description": "JS module that can be used to compress (zlib) , encode (base45) and generate QR out of given any data. Also can be used to do the operation vice versa",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "verify": "npm test"
   },
   "devDependencies": {

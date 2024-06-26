@@ -48,27 +48,34 @@ function decode(data) {
   }
 }
 
-function getMappedCborData(jsonData, claimMap) {
+function getMappedCborData(jsonData, mapper) {
   const payload = new Map();
   for (const param in jsonData) {
-    const key = claimMap[param] ? claimMap[param] : param;
+    const key = mapper[param] ? mapper[param] : param;
     const value = jsonData[param];
     payload.set(key, value);
   }
   return cbor.encode(payload);
 }
 
-function decodeMappedCborData (cborData, claimMap) {
-  const jsonData = cbor.decode(cborData)
-  return translateToJSON(jsonData,claimMap)
+function decodeMappedCborData(cborEncodedString, mapper) {
+  const jsonData = cbor.decode(cborEncodedString)
+  return translateToJSON(jsonData, mapper)
 }
 
-function translateToJSON (claims,claimMap) {
-  const result = {};
-  claims.forEach((value, param, _) => {
-    const key = claimMap[param] ? claimMap[param] : param;
-    result[key] = value;
-  });
+function translateToJSON(claims, mapper) {
+  const result = {}
+  if (claims instanceof Map) {
+    claims.forEach((value, param) => {
+      const key = mapper[param] ? mapper[param] : param;
+      result[key] = value;
+    });
+  } else if (typeof claims === 'object' && claims !== null) {
+    Object.entries(claims).forEach(([param, value]) => {
+      const key = mapper[param] ? mapper[param] : param;
+      result[key] = value;
+    });
+  }
   return result;
 }
 

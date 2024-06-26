@@ -1,13 +1,13 @@
 const {
-  DEFAULT_QR_QUALITY,
-  DEFAULT_QR_BORDER,
-  DEFAULT_QR_SCALE,
-  COLOR_BLACK,
-  COLOR_WHITE,
-  DEFAULT_ZLIB_COMPRESSION_LEVEL,
-  DEFAULT_ECC_LEVEL,
-} = require("./shared/Constants");
-const QRCode = require("qrcode");
+    DEFAULT_QR_QUALITY,
+    DEFAULT_QR_BORDER,
+    DEFAULT_QR_SCALE,
+    COLOR_BLACK,
+    COLOR_WHITE,
+    DEFAULT_ZLIB_COMPRESSION_LEVEL,
+    DEFAULT_ECC_LEVEL
+} = require('./shared/Constants');
+const QRCode = require('qrcode');
 const b45 = require("base45-web");
 const pako = require("pako");
 const cbor = require("cbor-web");

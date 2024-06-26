@@ -3,6 +3,7 @@ const {expect} = require("expect");
 const {ECC} = require("../src/types/ECC");
 
 const HEX_ENCODING = "hex";
+
 test("should return decoded data for given QR data", () => {
     const data = "NCFKVPV0QSIP600GP5L0";
     const expected = "hello";
@@ -13,7 +14,6 @@ test("should return decoded data for given QR data", () => {
 test("should return decoded data for given QR data in cbor", () => {
     const data = "NCFHPE/Q6:96+963Y6:96P563H0 %2DH0";
     const expected = '{"temp":15}';
-
     const actual = decode(data);
     expect(actual).toBe(expected);
 });

@@ -79,7 +79,7 @@ publishing {
             }
             groupId = "io.mosip"
             artifactId = "pixelpass-aar"
-            version = "1.4-SNAPSHOT"
+            version = "0.2.0-SNAPSHOT"
             if (project.gradle.startParameter.taskNames.any { it.contains('assembleRelease') }) {
                 artifacts {
                     aar {
@@ -93,7 +93,7 @@ publishing {
             artifact(tasks.named("jarRelease").get())
             groupId = "io.mosip"
             artifactId = "pixelpass-jar"
-            version = "1.4-SNAPSHOT"
+            version = "0.2.0-SNAPSHOT"
             pom {
                 withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')

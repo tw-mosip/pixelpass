@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.util.Log
 import co.nstant.`in`.cbor.CborDecoder
 import co.nstant.`in`.cbor.CborEncoder
-import co.nstant.`in`.cbor.model.UnicodeString
 import io.mosip.pixelpass.cbor.Utils
 import io.mosip.pixelpass.shared.QR_BORDER
 import io.mosip.pixelpass.shared.QR_SCALE
@@ -92,8 +91,8 @@ class PixelPass {
         return baos.toByteArray().toHexString()
     }
 
-    fun decodeMappedCborData(cborData: String, mapper: Map<String,String>): String {
-        val cborDecodedData = CborDecoder(ByteArrayInputStream(cborData.decodeHex())).decode()[0]
+    fun decodeMappedCborData(cborEncodedString: String, mapper: Map<String,String>): String {
+        val cborDecodedData = CborDecoder(ByteArrayInputStream(cborEncodedString.decodeHex())).decode()[0]
         val jsonData =  (Utils().toJson(cborDecodedData) as JSONObject)
 
         val payload = JSONObject()

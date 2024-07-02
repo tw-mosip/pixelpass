@@ -12,7 +12,6 @@ const b45 = require("base45-web");
 const pako = require("pako");
 const cbor = require("cbor-web");
 
-
 function generateQRData(data, header = "") {
     let parsedData = null;
     let compressedData, b45EncodedData;

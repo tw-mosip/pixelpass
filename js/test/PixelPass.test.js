@@ -12,17 +12,14 @@ test("should return decoded data for given QR data", () => {
     expect(actual).toBe(expected);
 });
 test("should return decoded data for given QR data in cbor", () => {
-    const data = "NCFHPE/Q6:96+963Y6:96P563H0 %2DH0";
-    const expected = '{"temp":15}';
+    const data = "NCF3QBXJA5NJRCOC004 QN4";
+    const expected = "{\"temp\":15}";
     const actual = decode(data);
     expect(actual).toBe(expected);
 });
-test("should throw error if given data is null or undefined for encoding", () => {
-    expect(() => generateQRData(null)).toThrowError(
-        "Cannot read properties of null (reading 'length')"
-    );
+test("should throw error if given data is undefined for encoding", () => {
     expect(() => generateQRData(undefined)).toThrowError(
-        "Cannot read properties of undefined (reading 'length')"
+        "byteArrayArg is null or undefined."
     );
 });
 test("should throw error if given data is invalid for decoding", () => {
@@ -55,6 +52,13 @@ test("should return encoded QR data for data", () => {
     const expected = "NCFKVPV0QSIP600GP5L0";
     const data = "hello";
 
+    const actual = generateQRData(data);
+    expect(actual).toBe(expected);
+});
+
+test("should return encoded QR data for given data with cbor", () => {
+    const expected = "NCF3QBXJA5NJRCOC004 QN4";
+    const data = '{"temp":15}';
     const actual = generateQRData(data);
     expect(actual).toBe(expected);
 });

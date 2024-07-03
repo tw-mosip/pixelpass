@@ -9,8 +9,8 @@ const {
 } = require('./shared/Constants');
 const QRCode = require('qrcode');
 const b45 = require("base45-web");
-const pako = require('pako');
-const cbor = require('cbor-web');
+const pako = require("pako");
+const cbor = require("cbor-web");
 
 function generateQRData(data, header = "") {
     let parsedData = null;
@@ -37,8 +37,8 @@ async function generateQRCode(data, ecc = DEFAULT_ECC_LEVEL, header = "") {
         scale: DEFAULT_QR_SCALE,
         color: {
             dark: COLOR_BLACK,
-            light: COLOR_WHITE
-        }
+            light: COLOR_WHITE,
+        },
     };
     return QRCode.toDataURL(base45Data, opts);
 }
@@ -56,8 +56,42 @@ function decode(data) {
     }
 }
 
+function getMappedCborData(jsonData, mapper) {
+    const payload = new Map();
+    for (const param in jsonData) {
+        const key = mapper[param] ? mapper[param] : param;
+        const value = jsonData[param];
+        payload.set(key, value);
+    }
+    return cbor.encode(payload);
+}
+
+function decodeMappedCborData(cborEncodedString, mapper) {
+    const jsonData = cbor.decode(cborEncodedString)
+    return translateToJSON(jsonData, mapper)
+}
+
+function translateToJSON(claims, mapper) {
+    const result = {}
+    if (claims instanceof Map) {
+        claims.forEach((value, param) => {
+            const key = mapper[param] ? mapper[param] : param;
+            result[key] = value;
+        });
+    } else if (typeof claims === 'object' && claims !== null) {
+        Object.entries(claims).forEach(([param, value]) => {
+            const key = mapper[param] ? mapper[param] : param;
+            result[key] = value;
+        });
+    }
+    return result;
+}
+
+
 module.exports = {
     generateQRData,
     generateQRCode,
-    decode
+    decode,
+    getMappedCborData,
+    decodeMappedCborData
 };

@@ -36,5 +36,20 @@ returns compressed and encoded data for qrcode with header prepended if provided
 
 returns a base45 decoded and zlib decompressed string
 
+
+`getMappedCborData( jsonData, mapper )`
+
+- `jsonData` - A JSON data. Which is a JSONObject.
+- `mapper` - A Map which is used to map with the JSON. Which is a Map<String,String>.
+
+return a hex string which is a CBOR encoded JSON with given mapper.
+
+`decodeMappedCborData( cborEncodedString, mapper )`
+
+- `cborEncodedString` - A CBOR Encoded string
+- `mapper` - A Map which is used to map with the JSON.Which is a Map<String,String>
+
+return a JSONObject which mapped with given mapper.
+
 ## License
 MIT

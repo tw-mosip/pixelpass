@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>PixelPass Example QR Generator App</h1>
+<h1>PixelPass Example App</h1>
+<button id="decode" onclick="window.location.href='/decode'"> Click here to decode</button>
 <div class="container">
     <div style="flex: 1; padding: 20px;height: 650px">
         <textarea id="json-text" oninput="generateQR()" placeholder="Paste Your JSON Here"></textarea>

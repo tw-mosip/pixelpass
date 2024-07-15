@@ -1,7 +1,7 @@
 const open = require('open');
 const express = require('express')
 const path = require('path');
-const {generateQRCode, generateQRData} = require('../src')
+const {decode, generateQRData} = require('../src')
 const QRCode = require("qrcode");
 const {
     DEFAULT_QR_QUALITY,
@@ -22,6 +22,12 @@ app.get('/', (req, res) => {
     res.sendFile("index.html", options)
 })
 
+app.get('/decode', (req, res) => {
+    const options = {
+        root: path.join(__dirname)
+    };
+    res.sendFile("decode.html", options)
+})
 app.get('/styles.css', (req, res) => {
     const options = {
         root: path.join(__dirname)
@@ -47,6 +53,13 @@ app.post('/qr', (req, res) => {
     QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qr]))
 })
 
+
+app.post('/decodeQR', (req, res) => {
+    let data = req.body
+    console.log("JSON RECEIVED : ", data)
+    let json = decode(data.qrData);
+    res.send(json)
+})
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
     open('http://localhost:3000');

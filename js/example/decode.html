@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Example</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>PixelPass Example App</h1>
+<button id="decode" onclick="window.location.href='/'"> Click here to generate QR</button>
+<div class="container">
+    <div style="flex: 1; padding: 20px;height: 650px">
+        <textarea id="json-text" oninput="decodeQR()" placeholder="Paste Your QR Date Here"></textarea>
+    </div>
+    <div style="flex: 1; padding: 20px;height: 650px">
+        <textarea id="decode-text" readonly></textarea>
+    </div>
+</div>
+<h3 id="version" style="visibility: hidden"></h3>
+<div id="download-section" style="visibility: hidden">
+    <h3 id="error" style="visibility: hidden">Invalid Data</h3>
+</div>
+</body>
+
+<script>
+    function decodeQR() {
+        let qrData = document.getElementById("json-text").value
+        try {
+            let jsonString = JSON.stringify({"qrData":qrData})
+            document.getElementById("error").style.visibility = "hidden";
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    console.log(xhttp.responseText)
+                }
+                document.getElementById("decode-text").value = xhttp.responseText;
+            };
+            xhttp.open("POST", 'decodeQR', true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(jsonString);
+        } catch (e) {
+            document.getElementById("error").style.visibility = "visible";
+        }
+    }
+</script>
+
+</html>

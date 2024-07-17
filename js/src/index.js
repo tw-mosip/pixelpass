@@ -56,7 +56,7 @@ function decode(data) {
     }
 }
 
-function getMappedCborData(jsonData, mapper, cborEnable = false) {
+function getMappedData(jsonData, mapper, cborEnable = false) {
     const payload ={};
     for (const param in jsonData) {
         const key = mapper[param] ? mapper[param] : param;
@@ -68,11 +68,11 @@ function getMappedCborData(jsonData, mapper, cborEnable = false) {
         return payload
 }
 
-function decodeMappedCborData(data, mapper, cborEnable = false) {
-    if(cborEnable) {
+function decodeMappedData(data, mapper) {
+    try {
         const jsonData = cbor.decode(data)
         return translateToJSON(jsonData, mapper)
-    }else {
+    }catch (e) {
         return translateToJSON(data,mapper)
     }
 
@@ -99,6 +99,6 @@ module.exports = {
     generateQRData,
     generateQRCode,
     decode,
-    getMappedCborData,
-    decodeMappedCborData
+    getMappedData,
+    decodeMappedData
 };

@@ -56,19 +56,26 @@ function decode(data) {
     }
 }
 
-function getMappedCborData(jsonData, mapper) {
-    const payload = new Map();
+function getMappedCborData(jsonData, mapper, cborEnable = false) {
+    const payload ={};
     for (const param in jsonData) {
         const key = mapper[param] ? mapper[param] : param;
-        const value = jsonData[param];
-        payload.set(key, value);
+        payload[key]= jsonData[param];
     }
-    return cbor.encode(payload);
+    if (cborEnable)
+        return cbor.encode(payload);
+    else
+        return payload
 }
 
-function decodeMappedCborData(cborEncodedString, mapper) {
-    const jsonData = cbor.decode(cborEncodedString)
-    return translateToJSON(jsonData, mapper)
+function decodeMappedCborData(data, mapper, cborEnable = false) {
+    if(cborEnable) {
+        const jsonData = cbor.decode(data)
+        return translateToJSON(jsonData, mapper)
+    }else {
+        return translateToJSON(data,mapper)
+    }
+
 }
 
 function translateToJSON(claims, mapper) {

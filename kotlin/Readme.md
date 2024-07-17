@@ -37,16 +37,17 @@ returns compressed and encoded data for qrcode with header prepended if provided
 returns a base45 decoded and zlib decompressed string
 
 
-`getMappedCborData( jsonData, mapper )`
+`getMappedData( jsonData, mapper, cborEnable )`
 
 - `jsonData` - A JSON data. Which is a JSONObject.
 - `mapper` - A Map which is used to map with the JSON. Which is a Map<String,String>.
+- `cborEnable` - A Boolean which is used to enable or disable CBOR encoding on mapped data. Defaults to `false` if not provided.
 
-return a hex string which is a CBOR encoded JSON with given mapper.
+return a hex string which is a CBOR encoded JSON with given mapper if `cborEnable` is set to true. Or returns a JSON remapped string.
 
-`decodeMappedCborData( cborEncodedString, mapper )`
+`decodeMappeData( data, mapper )`
 
-- `cborEncodedString` - A CBOR Encoded string
+- `data` - A CBOR Encoded string or JSON string which needs to be re mapped.
 - `mapper` - A Map which is used to map with the JSON.Which is a Map<String,String>
 
 return a JSONObject which mapped with given mapper.

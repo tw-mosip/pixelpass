@@ -100,7 +100,17 @@ class   PixelPassTest {
         val data  = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
         val mapper = mapOf("id" to "1", "name" to "2", "l_name" to "3")
 
-        val actual = PixelPass().getMappedCborData(data,mapper)
+        val actual = PixelPass().getMappedData(data,mapper,true)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return mapped data for given data with map`() {
+        val expected = "{ 1: 207, 2: Jhon, 3: Honay }";
+        val data  = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
+        val mapper = mapOf("id" to "1", "name" to "2", "l_name" to "3")
+
+        val actual = PixelPass().getMappedData(data,mapper)
         Assert.assertEquals(expected, actual)
     }
 
@@ -127,7 +137,7 @@ class   PixelPassTest {
             "binaryImageFormat" to "17",
             "bestQualityFingers" to "18")
 
-        val actual = PixelPass().getMappedCborData(data,mapper)
+        val actual = PixelPass().getMappedData(data,mapper,true)
         Assert.assertEquals(expected, actual)
     }
 
@@ -137,7 +147,16 @@ class   PixelPassTest {
         val data = "a302644a686f6e01633230370365486f6e6179"
         val mapper = mapOf("1" to "id","2" to "name", "3" to "l_name")
 
-        val actual = PixelPass().decodeMappedCborData(data,mapper)
+        val actual = PixelPass().decodeMappedData(data,mapper)
+        Assert.assertEquals(expected, actual)
+    }
+    @Test
+    fun `should return properly mapped JSON data for given data`() {
+        val expected = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}").toString()
+        val data = "{ \"1\": \"207\", 2: Jhon, 3: Honay }"
+        val mapper = mapOf("1" to "id","2" to "name", "3" to "l_name")
+
+        val actual = PixelPass().decodeMappedData(data,mapper)
         Assert.assertEquals(expected, actual)
     }
 }

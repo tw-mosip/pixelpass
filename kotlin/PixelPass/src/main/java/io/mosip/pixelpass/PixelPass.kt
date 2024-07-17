@@ -73,7 +73,7 @@ class PixelPass {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun getMappedCborData(jsonData: JSONObject, mapper: Map<String,String>): String {
+    fun getMappedData(jsonData: JSONObject, mapper: Map<String,String>, cborEnable: Boolean = false): String {
 
         val mappedJson = JSONObject()
         val iterator = jsonData.keys().iterator()
@@ -86,14 +86,22 @@ class PixelPass {
 
         val payload = Utils().toDataItem(mappedJson)
 
-        val baos = ByteArrayOutputStream()
-        CborEncoder(baos).encode(payload)
-        return baos.toByteArray().toHexString()
+        if (cborEnable) {
+            val baos = ByteArrayOutputStream()
+            CborEncoder(baos).encode(payload)
+            return baos.toByteArray().toHexString()
+        }
+        return payload.toString()
     }
 
-    fun decodeMappedCborData(cborEncodedString: String, mapper: Map<String,String>): String {
-        val cborDecodedData = CborDecoder(ByteArrayInputStream(cborEncodedString.decodeHex())).decode()[0]
-        val jsonData =  (Utils().toJson(cborDecodedData) as JSONObject)
+    fun decodeMappedData(data: String, mapper: Map<String,String>): String {
+        var jsonData: JSONObject
+        try {
+            val cborDecodedData = CborDecoder(ByteArrayInputStream(data.decodeHex())).decode()[0]
+            jsonData =  (Utils().toJson(cborDecodedData) as JSONObject)
+        }catch (_: Exception){
+            jsonData = JSONObject(data)
+        }
 
         val payload = JSONObject()
         val iterator = jsonData.keys().iterator()

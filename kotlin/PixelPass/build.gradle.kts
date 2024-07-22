@@ -56,10 +56,10 @@ tasks.register<Jar>("jarRelease") {
     }
     manifest {
         attributes["Implementation-Title"] = project.name
-        attributes["Implementation-Version"] = "1.4-SNAPSHOT"
+        attributes["Implementation-Version"] = "1.5-SNAPSHOT"
     }
     archiveBaseName.set("${project.name}-release")
-    archiveVersion.set("1.4-SNAPSHOT")
+    archiveVersion.set("1.5-SNAPSHOT")
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
 }
 apply(from = "publish-artifact.gradle")

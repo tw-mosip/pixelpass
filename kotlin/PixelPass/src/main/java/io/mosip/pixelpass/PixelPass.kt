@@ -58,9 +58,9 @@ class PixelPass {
              }
              val toDataItem = Utils().toDataItem(parsedData)
 
-             val baos = ByteArrayOutputStream()
-             CborEncoder(baos).nonCanonical().encode(toDataItem)
-             compressedData = ZLib().encode(baos.toByteArray())
+             val cborByteArrayOutputStream = ByteArrayOutputStream()
+             CborEncoder(cborByteArrayOutputStream).nonCanonical().encode(toDataItem)
+             compressedData = ZLib().encode(cborByteArrayOutputStream.toByteArray())
 
          }catch (e: Exception){
              Log.e("PixelPass",e.toString())
@@ -87,9 +87,9 @@ class PixelPass {
         val payload = Utils().toDataItem(mappedJson)
 
         if (cborEnable) {
-            val baos = ByteArrayOutputStream()
-            CborEncoder(baos).encode(payload)
-            return baos.toByteArray().toHexString()
+            val cborByteArrayOutputStream = ByteArrayOutputStream()
+            CborEncoder(cborByteArrayOutputStream).encode(payload)
+            return cborByteArrayOutputStream.toByteArray().toHexString()
         }
         return payload.toString()
     }

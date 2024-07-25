@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.config.JvmTarget
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -23,25 +21,22 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
 }
 
 dependencies {
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
     implementation(libs.qrcodegen)
     implementation(libs.base45)
     implementation(libs.cbor)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
-    testImplementation("org.json:json:20140107")
+    testImplementation(libs.json)
 }
 
 tasks {
@@ -61,10 +56,10 @@ tasks.register<Jar>("jarRelease") {
     }
     manifest {
         attributes["Implementation-Title"] = project.name
-        attributes["Implementation-Version"] = "1.4-SNAPSHOT"
+        attributes["Implementation-Version"] = "1.5-SNAPSHOT"
     }
     archiveBaseName.set("${project.name}-release")
-    archiveVersion.set("1.4-SNAPSHOT")
+    archiveVersion.set("1.5-SNAPSHOT")
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
 }
 apply(from = "publish-artifact.gradle")

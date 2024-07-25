@@ -91,39 +91,40 @@ const jsonString = decode(encodedData);
 ```
 The `decode` will take a base45 encoded string  as parameter and gives us decoded JSON string which is Base45 `Decoded > CBOR Decoded > Decompressed`.
 
-### getMappedCborData( jsonData, mapper );
+### getMappedData( jsonData, mapper, cborEnable );
 
 - `jsonData` - A JSON data.
 - `mapper` - A Map which is used to map with the JSON.
+- `cborEnable` - A Boolean which is used to enable or disable CBOR encoding on mapped data. Defaults to `false` if not provided.
 
 ```javascript
-import { getMappedCborData } from '@mosip/pixelpass';
+import { getMappedData } from '@mosip/pixelpass';
 
 const jsonData = {"name": "Jhon", "id": "207", "l_name": "Honay"};
 const mapper = {"id": "1", "name": "2", "l_name": "3"};
 
-const byteBuffer = getMappedCborData(jsonData, mapper);
+const byteBuffer = getMappedData(jsonData, mapper,true);
 
 const cborEncodedString = byteBuffer.toString('hex');
 ```
-The `getMappedCborData` takes 2 arguments a JSON and a map with which we will be creating a new map with keys and values mapped based on the mapper.
+The `getMappedData` takes 3 arguments a JSON and a map with which we will be creating a new map with keys and values mapped based on the mapper. The third parameter is an optional value to enable or disable CBOR encoding on the mapped data.  
 The example of a converted map would look like, `{ "1": "207", "2": "Jhon", "3": "Honay"}`
 
-### decodeMappedCborData( cborEncodedString, mapper )
+### decodeMappedData( data, mapper )
 
-- `cborEncodedString` - A CBOREncoded string
+- `data` - A CBOREncoded string or a mapped JSON.
 - `mapper` - A Map which is used to map with the JSON.
 
 ```javascript
-import { decodeMappedCborData } from '@mosip/pixelpass';
+import { decodeMappedData } from '@mosip/pixelpass';
 
 const cborEncodedString = "a302644a686f6e01633230370365486f6e6179";
 const mapper = {"1": "id", "2": "name", "3": "l_name"};
 
-const jsonData = decodeMappedCborData(cborEncodedString, mapper);
+const jsonData = decodeMappedData(cborEncodedString, mapper);
 ```
 
-The `decodeMappedCborData` takes 2 arguments a string which is CBOR Encoded and a map with which we will be creating a JSON by mapping the keys and values.
+The `decodeMappedData` takes 2 arguments a string which is CBOR Encoded or a mapped JSON and a map with which we will be creating a JSON by mapping the keys and values. If the data provided is CBOR encoded string the API will do a CBOR decode first ad then proceed with re-mapping the data.
 The example of the returned JSON would look like, `{"name": "Jhon", "id": "207", "l_name": "Honay"}`
 
 

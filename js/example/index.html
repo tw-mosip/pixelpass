@@ -31,10 +31,10 @@
             <textarea id="json-text" oninput="generateCwt()" placeholder="Paste Your JSON Here"></textarea>
         </div>
         <div style="flex: 1; padding: 20px;height: 652px">
-            <textarea id="cwt-out-text"></textarea>
+            <textarea contenteditable="false" id="cwt-out-text"></textarea>
         </div>
     </div>
-    <h3 id="in-size" style="visibility: hidden"></h3>
+    <h3 id="input-size" style="visibility: hidden"></h3>
     <h3 id="out-size" style="visibility: hidden"></h3>
     <h3 id="error" style="visibility: hidden">Invalid JSON</h3>
 </div>
@@ -65,6 +65,8 @@
         document.getElementById("qr-container").style.display = "none";
         document.getElementById("json-container").style.visibility = "visible";
         document.getElementById("json-container").style.display = "block";
+        document.getElementById("json-text").value = "";
+        document.getElementById("cwt-out-text").value = "";
     }
 
     function showQRGenerator(){
@@ -72,14 +74,18 @@
         document.getElementById("json-container").style.display = "none";
         document.getElementById("qr-container").style.visibility = "visible";
         document.getElementById("qr-container").style.display = "block";
+        document.getElementById("cwt-text").value = "";
+        document.getElementById("qr-image").src = "";
+        document.getElementById("version").innerText = ""
+        document.getElementById("download-section").style.visibility = "hidden"
     }
 
     function generateCwt() {
-        let json = JSON.parse(document.getElementById("json-text").value)
+        let jsonString = JSON.stringify(JSON.parse(document.getElementById("json-text").value))
         try {
             document.getElementById("error").style.visibility = "hidden";
-            document.getElementById("in-size").style.visibility = "visible";
-            // document.getElementById("in-size").innerText = (new Blob(json)).size.toString();
+            document.getElementById("input-size").style.visibility = "visible";
+            document.getElementById("input-size").innerText = "JSON Data Size in bytes : " + jsonString.length.toString();
 
             let xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -87,14 +93,15 @@
                     console.log(xhttp.responseText)
                 }
 
-                document.getElementById("cwt-out-text").innerText = xhttp.responseText;
-                document.getElementById("out-size").innerText = "CBOR converted Data Size in bytes : " + xhttp.responseText.length/2;
+                document.getElementById("cwt-out-text").value = xhttp.responseText;
+                document.getElementById("out-size").innerText = "CLAIM 169 converted Data Size in bytes : " + xhttp.responseText.length/2;
                 document.getElementById("out-size").style.visibility = "visible";
             };
             xhttp.open("POST", 'convert', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhttp.send(JSON.stringify(json));
+            xhttp.send(jsonString);
         } catch (e) {
+            console.log(e)
             document.getElementById("error").style.visibility = "visible";
             document.getElementById("in-size").style.visibility = "hidden";
             document.getElementById("out-size").style.visibility = "hidden";

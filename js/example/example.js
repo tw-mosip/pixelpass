@@ -53,13 +53,12 @@ app.post('/qr', (req, res) => {
 
 app.post('/convert', (req, res) => {
     let json = req.body;
-    console.log("DATA RECEIVED : ", json)
     const faceMap  = new Map();
     faceMap.set(0,json.face.data);
     faceMap.set(1,0);
     faceMap.set(2,4);
     json["face"] = faceMap;
-    console.log("DATA AFTER : ", json)
+    console.log("DATA RECEIVED CONVERT: ", json)
     const claim169MappedData = getMappedData(json)
-    res.send([claim169MappedData.toString('hex'),claim169MappedData.length])
+    res.send(claim169MappedData.toString('hex'))
 })

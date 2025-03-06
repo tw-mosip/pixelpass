@@ -46,11 +46,27 @@ app.post('/qr', (req, res) => {
             light: COLOR_WHITE
         }
     }
-    let qrData = generateQRData(req.body.cwt);
+    let qrData = generateQRData(hexStringToArrayBuffer(req.body.cwt));
     let version = QRCode.create(qrData, {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
     QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qr]))
 })
-
+function hexStringToArrayBuffer(hexString) {
+    hexString = hexString.replace(/^0x/, '');
+    if (hexString.length % 2 != 0) {
+        console.log('WARNING: expecting an even number of characters in the hexString');
+    }
+    var bad = hexString.match(/[G-Z\s]/i);
+    if (bad) {
+        console.log('WARNING: found non-hex characters', bad);
+    }
+    var pairs = hexString.match(/[\dA-F]{2}/gi);
+    var integers = pairs.map(function(s) {
+        return parseInt(s, 16);
+    });
+    var array = new Uint8Array(integers);
+    console.log(array);
+    return array.buffer;
+}
 app.post('/convert', (req, res) => {
     let json = req.body;
     const faceMap  = new Map();

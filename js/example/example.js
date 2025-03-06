@@ -48,7 +48,7 @@ app.post('/qr', (req, res) => {
     }
     let qrData = generateQRData(hexStringToArrayBuffer(req.body.cwt));
     let version = QRCode.create(qrData, {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
-    QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qr]))
+    QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qrData.length,qr]))
 })
 function hexStringToArrayBuffer(hexString) {
     hexString = hexString.replace(/^0x/, '');

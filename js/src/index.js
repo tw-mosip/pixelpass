@@ -7,13 +7,14 @@ const {
     DEFAULT_ZLIB_COMPRESSION_LEVEL,
     DEFAULT_ECC_LEVEL,
     ZIP_HEADER,
-    DEFAULT_ZIP_FILE_NAME
+    DEFAULT_ZIP_FILE_NAME, CLAIM_169_MAP
 } = require('./shared/Constants');
 const QRCode = require('qrcode');
 const b45 = require("base45-web");
 const pako = require("pako");
 const cbor = require("cbor-web");
 const JSZip = require("jszip");
+const {forEach} = require("jszip");
 
 function generateQRData(data, header = "") {
     let parsedData = null;
@@ -67,16 +68,17 @@ async function decodeBinary(data) {
     }
 }
 
-function getMappedData(jsonData, mapper, cborEnable = false) {
-    const payload ={};
-    for (const param in jsonData) {
-        const key = mapper[param] ? mapper[param] : param;
-        payload[key]= jsonData[param];
-    }
-    if (cborEnable)
-        return cbor.encode(payload);
-    else
-        return payload
+function getMappedData(jsonData) {
+    const remappedData = new Map();
+    Object.keys(jsonData).forEach(key=> {
+        let literalKey = CLAIM_169_MAP.get(key);
+        if (literalKey) {
+            remappedData.set(literalKey,jsonData[key]);
+        }else {
+            remappedData.set(key,jsonData[key]);
+        }
+    })
+    return cbor.encode(remappedData).toString('hex');
 }
 
 function decodeMappedData(data, mapper) {

@@ -1,7 +1,7 @@
 const open = require('open');
 const express = require('express')
 const path = require('path');
-const {generateQRCode, generateQRData} = require('../src')
+const { generateQRData, getMappedData} = require('../src')
 const QRCode = require("qrcode");
 const {
     DEFAULT_QR_QUALITY,
@@ -29,9 +29,13 @@ app.get('/styles.css', (req, res) => {
     res.sendFile("stylesheet.css", options)
 })
 
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+    open('http://localhost:3000');
+})
+
 app.post('/qr', (req, res) => {
-    let json = req.body
-    console.log("JSON RECEIVED : ", json)
+    console.log("DATA RECEIVED : ", req.body)
     const opts = {
         errorCorrectionLevel: DEFAULT_ECC_LEVEL,
         quality: DEFAULT_QR_QUALITY,
@@ -42,12 +46,20 @@ app.post('/qr', (req, res) => {
             light: COLOR_WHITE
         }
     }
-    let qrData = generateQRData(JSON.stringify(json));
+    let qrData = generateQRData(req.body.cwt);
     let version = QRCode.create(qrData, {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
     QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qr]))
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-    open('http://localhost:3000');
+app.post('/convert', (req, res) => {
+    let json = req.body;
+    console.log("DATA RECEIVED : ", json)
+    const faceMap  = new Map();
+    faceMap.set(0,json.face.data);
+    faceMap.set(1,0);
+    faceMap.set(2,4);
+    console.log(faceMap)
+    json["face"] = faceMap;
+    const claim169MappedData = getMappedData(json)
+    res.send(claim169MappedData)
 })

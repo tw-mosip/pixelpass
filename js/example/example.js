@@ -35,7 +35,7 @@ app.listen(port, () => {
 })
 
 app.post('/qr', (req, res) => {
-    console.log("DATA RECEIVED : ", req.body)
+    console.log("DATA RECEIVED QR: ", req.body)
     const opts = {
         errorCorrectionLevel: DEFAULT_ECC_LEVEL,
         quality: DEFAULT_QR_QUALITY,

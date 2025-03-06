@@ -86,9 +86,9 @@
                 if (this.readyState === 4 && this.status === 200) {
                     console.log(xhttp.responseText)
                 }
-                const response = JSON.parse(xhttp.responseText);
-                document.getElementById("cwt-out-text").innerText = response[0];
-                document.getElementById("out-size").innerText = "CWT converted Data Size in bytes : " + response[1];
+
+                document.getElementById("cwt-out-text").innerText = xhttp.responseText;
+                document.getElementById("out-size").innerText = "CBOR converted Data Size in bytes : " + xhttp.responseText.length/2;
                 document.getElementById("out-size").style.visibility = "visible";
             };
             xhttp.open("POST", 'convert', true);
@@ -120,7 +120,9 @@
                 document.getElementById("download-section").style.visibility = "visible"
             };
             xhttp.open("POST", 'qr', true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhttp.send(JSON.stringify({"cwt": cwt}));
+
         } catch (e) {
             document.getElementById("error").style.visibility = "visible";
             document.getElementById("qr-image").style.visibility = "hidden";

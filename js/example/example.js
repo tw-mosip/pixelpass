@@ -58,8 +58,8 @@ app.post('/convert', (req, res) => {
     faceMap.set(0,json.face.data);
     faceMap.set(1,0);
     faceMap.set(2,4);
-    console.log(faceMap)
     json["face"] = faceMap;
+    console.log("DATA AFTER : ", json)
     const claim169MappedData = getMappedData(json)
-    res.send(claim169MappedData)
+    res.send([claim169MappedData.toString('hex'),claim169MappedData.length])
 })

@@ -78,7 +78,7 @@ function getMappedData(jsonData) {
             remappedData.set(key,jsonData[key]);
         }
     })
-    return cbor.encode(remappedData).toString('hex');
+    return cbor.encode(remappedData);
 }
 
 function decodeMappedData(data, mapper) {

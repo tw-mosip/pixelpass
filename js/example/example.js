@@ -34,7 +34,7 @@ app.listen(port, () => {
     open('http://localhost:3000');
 })
 
-app.post('/qr', (req, res) => {
+app.post('/qr', async (req, res) => {
     console.log("DATA RECEIVED QR: ", req.body)
     const opts = {
         errorCorrectionLevel: DEFAULT_ECC_LEVEL,
@@ -46,9 +46,10 @@ app.post('/qr', (req, res) => {
             light: COLOR_WHITE
         }
     }
-    let qrData = generateQRData(hexStringToArrayBuffer(req.body.cwt));
-    let version = QRCode.create(qrData, {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
-    QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qrData.length,qr]))
+
+    let qrData = await generateQRData(hexStringToArrayBuffer(req.body.cwt));
+    let version = QRCode.create(qrData[1], {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
+    QRCode.toDataURL(qrData[1],opts).then(qr => res.send([version,qrData[1].length,qr,qrData[0].toString().replaceAll(`h'`,`\nh'`)]))
 })
 function hexStringToArrayBuffer(hexString) {
     hexString = hexString.replace(/^0x/, '');
@@ -76,5 +77,5 @@ app.post('/convert', (req, res) => {
     json["face"] = faceMap;
     console.log("DATA RECEIVED CONVERT: ", json)
     const claim169MappedData = getMappedData(json)
-    res.send(claim169MappedData.toString('hex'))
+    res.send(claim169MappedData)
 })

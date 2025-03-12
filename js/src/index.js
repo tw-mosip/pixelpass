@@ -16,10 +16,12 @@ const cbor = require("cbor-web");
 const JSZip = require("jszip");
 const {forEach} = require("jszip");
 
-function generateQRData(data, header = "") {
+async function generateQRData(data, header = "") {
+
     let parsedData = null;
-    let compressedData, b45EncodedData;
+    let compressedData, b45EncodedData,cborString;
     try {
+        cborString = await cbor.diagnose(data);
         parsedData = JSON.parse(data);
         const cborEncodedData = cbor.encode(parsedData);
         compressedData = pako.deflate(cborEncodedData, {level: DEFAULT_ZLIB_COMPRESSION_LEVEL});
@@ -29,7 +31,8 @@ function generateQRData(data, header = "") {
     } finally {
         b45EncodedData = b45.encode(compressedData).toString();
     }
-    return header + b45EncodedData;
+
+    return [cborString,header + b45EncodedData];
 }
 async function generateQRCode(data, ecc = DEFAULT_ECC_LEVEL, header = "") {
     const base45Data = generateQRData(data, header);
@@ -78,7 +81,24 @@ function getMappedData(jsonData) {
             remappedData.set(key,jsonData[key]);
         }
     })
-    return cbor.encode(remappedData);
+    return [mapToString(remappedData),cbor.encode(remappedData).toString('hex')];
+}
+function mapToString(map, indent = "") {
+    let result = "{\n";
+    const nextIndent = indent + "\t"; // Increase indent for nested maps
+
+    for (const [key, value] of map) {
+        result += `${nextIndent}${key}=> `;
+
+        if (value instanceof Map) {
+            result += mapToString(value, nextIndent); // Recursive call for nested maps
+        } else {
+            result += `${JSON.stringify(value)},\n`; // Stringify non-map values
+        }
+    }
+
+    result += `${indent}}\n`;
+    return result;
 }
 
 function decodeMappedData(data, mapper) {

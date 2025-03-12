@@ -36,6 +36,7 @@
     </div>
     <h3 id="input-size" style="visibility: hidden"></h3>
     <h3 id="out-size" style="visibility: hidden"></h3>
+    <h4 id="out-map" style="visibility: hidden;overflow: scroll;font-family: 'Andale Mono';overflow-wrap: break-word;"></h4>
     <h3 id="error" style="visibility: hidden">Invalid JSON</h3>
 </div>
 <div id="qr-container">
@@ -50,8 +51,9 @@
         </div>
     </div>
     <h3 id="version" style="visibility: hidden"></h3>
-    <h3 id="cwt-size" ></h3>
-    <h3 id="b45-size" ></h3>
+    <h3 id="cwt-size"></h3>
+    <h3 id="b45-size"></h3>
+    <h4 id="out-cwt" style="overflow: scroll;font-family: 'Andale Mono';overflow-wrap: break-word;"></h4>
     <div id="download-section" style="visibility: hidden">
         <a id='download' href="" title="ImageName">
             <button>Download</button>
@@ -62,7 +64,7 @@
 
 <script>
 
-    function showClaimsGenerator(){
+    function showClaimsGenerator() {
         document.getElementById("qr-container").style.visibility = "hidden";
         document.getElementById("qr-container").style.display = "none";
         document.getElementById("json-container").style.visibility = "visible";
@@ -70,10 +72,11 @@
         document.getElementById("json-text").value = "";
         document.getElementById("cwt-out-text").value = "";
         document.getElementById("out-size").innerText = "";
+        document.getElementById("out-map").innerText = "";
         document.getElementById("input-size").innerText = "";
     }
 
-    function showQRGenerator(){
+    function showQRGenerator() {
         document.getElementById("json-container").style.visibility = "hidden";
         document.getElementById("json-container").style.display = "none";
         document.getElementById("qr-container").style.visibility = "visible";
@@ -82,6 +85,7 @@
         document.getElementById("qr-image").src = "";
         document.getElementById("version").innerText = ""
         document.getElementById("b45-size").innerText = ""
+        document.getElementById("out-cwt").innerText = ""
         document.getElementById("cwt-size").innerText = ""
         document.getElementById("download-section").style.visibility = "hidden"
     }
@@ -98,10 +102,12 @@
                 if (this.readyState === 4 && this.status === 200) {
                     console.log(xhttp.responseText)
                 }
-
-                document.getElementById("cwt-out-text").value = xhttp.responseText;
-                document.getElementById("out-size").innerText = "CLAIM 169 converted Data Size in bytes : " + xhttp.responseText.length/2;
+                const resp = JSON.parse(xhttp.responseText)
+                document.getElementById("cwt-out-text").value = resp[1];
+                document.getElementById("out-size").innerText = "CLAIM 169 converted Data Size in bytes : " + resp[1].length / 2;
+                document.getElementById("out-map").innerText = "CLAIM 169 converted Data : \n" + resp[0]
                 document.getElementById("out-size").style.visibility = "visible";
+                document.getElementById("out-map").style.visibility = "visible";
             };
             xhttp.open("POST", 'convert', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -111,6 +117,7 @@
             document.getElementById("error").style.visibility = "visible";
             document.getElementById("in-size").style.visibility = "hidden";
             document.getElementById("out-size").style.visibility = "hidden";
+            document.getElementById("out-map").style.visibility = "hidden";
         }
     }
 
@@ -132,7 +139,8 @@
                 document.getElementById("qr-image").style.visibility = "visible";
                 document.getElementById("download-section").style.visibility = "visible"
                 document.getElementById("b45-size").innerText = `Base45 encoded Data size in bytes: ${response[1]}`
-                document.getElementById("cwt-size").innerText = `CWT data size in bytes : ${cwt.length/2}`
+                document.getElementById("out-cwt").innerText = "Decoded CWT : \n"+response[3]
+                document.getElementById("cwt-size").innerText = `CWT data size in bytes : ${cwt.length / 2}`
             };
             xhttp.open("POST", 'qr', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -143,10 +151,12 @@
             document.getElementById("qr-image").style.visibility = "hidden";
             document.getElementById("version").style.visibility = "hidden";
             document.getElementById("b45-size").innerText = ""
+            document.getElementById("out-cwt").innerText = ""
             document.getElementById("cwt-size").innerText = ""
             document.getElementById("download-section").style.visibility = "hidden"
         }
     }
+
     window.onload = () => showClaimsGenerator();
 </script>
 </html>

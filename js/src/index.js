@@ -14,12 +14,11 @@ const b45 = require("base45-web");
 const pako = require("pako");
 const cbor = require("cbor-web");
 const JSZip = require("jszip");
-const {forEach} = require("jszip");
 
 async function generateQRData(data, header = "") {
 
     let parsedData = null;
-    let compressedData, b45EncodedData,cborString;
+    let compressedData, b45EncodedData, cborString;
     try {
         cborString = await cbor.diagnose(data);
         parsedData = JSON.parse(data);
@@ -32,8 +31,9 @@ async function generateQRData(data, header = "") {
         b45EncodedData = b45.encode(compressedData).toString();
     }
 
-    return [cborString,header + b45EncodedData];
+    return [cborString, header + b45EncodedData];
 }
+
 async function generateQRCode(data, ecc = DEFAULT_ECC_LEVEL, header = "") {
     const base45Data = generateQRData(data, header);
     const opts = {
@@ -64,49 +64,53 @@ function decode(data) {
 
 async function decodeBinary(data) {
     let decodedData = new TextDecoder("utf-8").decode(data);
-    if (decodedData.startsWith(ZIP_HEADER)){
+    if (decodedData.startsWith(ZIP_HEADER)) {
         return (await JSZip.loadAsync(decodedData)).file(DEFAULT_ZIP_FILE_NAME).async("text")
-    }else {
+    } else {
         throw new Error("Unsupported binary file type");
     }
 }
 
 function getMappedData(jsonData) {
     const remappedData = new Map();
-    Object.keys(jsonData).forEach(key=> {
+    Object.keys(jsonData).forEach(key => {
         let literalKey = CLAIM_169_MAP.get(key);
         if (literalKey) {
-            remappedData.set(literalKey,jsonData[key]);
-        }else {
-            remappedData.set(key,jsonData[key]);
+            remappedData.set(literalKey, jsonData[key]);
+        } else {
+            remappedData.set(key, jsonData[key]);
         }
     })
-    return [mapToString(remappedData),cbor.encode(remappedData).toString('hex')];
+    return cbor.encode(remappedData).toString('hex');
 }
-function mapToString(map, indent = "") {
-    let result = "{\n";
-    const nextIndent = indent + "\t"; // Increase indent for nested maps
 
-    for (const [key, value] of map) {
-        result += `${nextIndent}${key}=> `;
+async function getSignedCwt(claim169Data) {
+    console.log(JSON.stringify({"claim169Data": claim169Data}))
+    const response = await fetch('https://api-internal.dev-int-inji.mosip.net/v1/cwt-service/cwtSign',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({"claim169Data": claim169Data})
+        });
 
-        if (value instanceof Map) {
-            result += mapToString(value, nextIndent); // Recursive call for nested maps
-        } else {
-            result += `${JSON.stringify(value)},\n`; // Stringify non-map values
-        }
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`External API error: ${response.status} - ${errorText}`);
+        return ""
     }
 
-    result += `${indent}}\n`;
-    return result;
+    const rJSON = await response.json();
+    return rJSON.cwtHexData;
 }
 
 function decodeMappedData(data, mapper) {
     try {
         const jsonData = cbor.decode(data)
         return translateToJSON(jsonData, mapper)
-    }catch (e) {
-        return translateToJSON(data,mapper)
+    } catch (e) {
+        return translateToJSON(data, mapper)
     }
 
 }
@@ -134,5 +138,6 @@ module.exports = {
     decode,
     getMappedData,
     decodeMappedData,
-    decodeBinary
+    decodeBinary,
+    getSignedCwt
 };

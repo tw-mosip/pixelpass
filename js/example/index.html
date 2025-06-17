@@ -5,109 +5,86 @@
     <title>Claim 169 Example</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .button {
+
+        .svg-arrow-button {
+            padding: 10px 20px;
             background-color: #04AA6D;
-            border: none;
             color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            height: 50px;
+        }
+
+        .svg-arrow-button:hover {
+            background-color: #218838;
+        }
+
+        .arrow-icon {
+            width: 1em; /* or specific px/rem for control */
+            height: 1em;
+            stroke: white; /* Color of the SVG icon */
+        }
+
+        /* For icon-only buttons, adjust size */
+        .svg-icon-button .arrow-icon {
+            width: 24px; /* Larger for icon-only */
+            height: 24px;
+            stroke: #333; /* Different color example */
         }
     </style>
 </head>
 <body>
 
-<h2>Claim 169 Example Tool</h2>
+<h2>Claim 169 QR Code Generator</h2>
 
-<button class="button" onclick=showClaimsGenerator()>Generate Claim 169 Data</button>
-<button class="button" onclick=showQRGenerator()>Generate QR Code</button>
 <div id="json-container">
     <div class="container">
         <div style="flex: 1; padding: 20px;height: 650px">
-            <textarea id="json-text" oninput="generateCwt()" placeholder="Paste Your JSON Here"></textarea>
+            <textarea id="json-text" placeholder="Paste Your JSON Here"></textarea>
         </div>
-        <div style="flex: 1; padding: 20px;height: 652px">
-            <textarea contenteditable="false" id="cwt-out-text"></textarea>
-        </div>
-    </div>
-    <h3 id="input-size" style="visibility: hidden"></h3>
-    <h3 id="out-size" style="visibility: hidden"></h3>
-    <h4 id="out-map" style="visibility: hidden;overflow: scroll;font-family: 'Andale Mono';overflow-wrap: break-word;"></h4>
-    <h3 id="error" style="visibility: hidden">Invalid JSON</h3>
-</div>
-<div id="qr-container">
-    <div class="container">
-        <div style="flex: 1; padding: 20px;height: 650px">
-            <textarea id="cwt-text" oninput="generateQR()" placeholder="Paste Your CWT Here"></textarea>
-        </div>
+        <button class="svg-arrow-button" onclick="generateCwt()">
+            Generate QR
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
         <div style="flex: 1; padding: 20px;height: 652px">
             <div style="border: 1px solid black; height: 654px">
                 <img id="qr-image" src="" height="650px">
             </div>
         </div>
     </div>
-    <h3 id="version" style="visibility: hidden"></h3>
-    <h3 id="cwt-size"></h3>
-    <h3 id="b45-size"></h3>
-    <h4 id="out-cwt" style="overflow: scroll;font-family: 'Andale Mono';overflow-wrap: break-word;"></h4>
     <div id="download-section" style="visibility: hidden">
         <a id='download' href="" title="ImageName">
             <button>Download</button>
         </a>
     </div>
+    <h3 id="error" style="visibility: hidden">Invalid JSON</h3>
+    <h3 id="cwt-size"></h3>
+    <h4 id="out-cwt" style="overflow: scroll;font-family: 'Andale Mono';overflow-wrap: break-word;"></h4>
 </div>
 </body>
 
 <script>
-
-    function showClaimsGenerator() {
-        document.getElementById("qr-container").style.visibility = "hidden";
-        document.getElementById("qr-container").style.display = "none";
-        document.getElementById("json-container").style.visibility = "visible";
-        document.getElementById("json-container").style.display = "block";
-        document.getElementById("json-text").value = "";
-        document.getElementById("cwt-out-text").value = "";
-        document.getElementById("out-size").innerText = "";
-        document.getElementById("out-map").innerText = "";
-        document.getElementById("input-size").innerText = "";
-    }
-
-    function showQRGenerator() {
-        document.getElementById("json-container").style.visibility = "hidden";
-        document.getElementById("json-container").style.display = "none";
-        document.getElementById("qr-container").style.visibility = "visible";
-        document.getElementById("qr-container").style.display = "block";
-        document.getElementById("cwt-text").value = "";
-        document.getElementById("qr-image").src = "";
-        document.getElementById("version").innerText = ""
-        document.getElementById("b45-size").innerText = ""
-        document.getElementById("out-cwt").innerText = ""
-        document.getElementById("cwt-size").innerText = ""
-        document.getElementById("download-section").style.visibility = "hidden"
-    }
-
     function generateCwt() {
-        let jsonString = JSON.stringify(JSON.parse(document.getElementById("json-text").value))
+        document.getElementById("qr-image").style.visibility = "hidden";
         try {
+            let jsonString = JSON.stringify(JSON.parse(document.getElementById("json-text").value))
             document.getElementById("error").style.visibility = "hidden";
-            document.getElementById("input-size").style.visibility = "visible";
-            document.getElementById("input-size").innerText = "JSON Data Size in bytes : " + jsonString.length.toString();
 
             let xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status === 200) {
                     console.log(xhttp.responseText)
+                    generateQR(xhttp.responseText)
                 }
-                const resp = JSON.parse(xhttp.responseText)
-                document.getElementById("cwt-out-text").value = resp[1];
-                document.getElementById("out-size").innerText = "CLAIM 169 converted Data Size in bytes : " + resp[1].length / 2;
-                document.getElementById("out-map").innerText = "CLAIM 169 converted Data : \n" + resp[0]
-                document.getElementById("out-size").style.visibility = "visible";
-                document.getElementById("out-map").style.visibility = "visible";
             };
             xhttp.open("POST", 'convert', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -115,14 +92,12 @@
         } catch (e) {
             console.log(e)
             document.getElementById("error").style.visibility = "visible";
-            document.getElementById("in-size").style.visibility = "hidden";
-            document.getElementById("out-size").style.visibility = "hidden";
-            document.getElementById("out-map").style.visibility = "hidden";
+            document.getElementById("cwt-size").style.visibility = "hidden";
+            document.getElementById("out-cwt").style.visibility = "hidden";
         }
     }
 
-    function generateQR() {
-        let cwt = document.getElementById("cwt-text").value
+    function generateQR(cwt) {
         try {
             document.getElementById("error").style.visibility = "hidden";
             let xhttp = new XMLHttpRequest();
@@ -133,14 +108,12 @@
                 let response = JSON.parse(xhttp.responseText)
                 document.getElementById("qr-image").src = response[2];
                 document.getElementById("download").href = response[2];
-                document.getElementById("version").innerText = `Current QR version is ${response[0]}`;
                 document.getElementById("download").download = `QR_v${response[0]}.PNG`
-                document.getElementById("version").style.visibility = "visible";
                 document.getElementById("qr-image").style.visibility = "visible";
                 document.getElementById("download-section").style.visibility = "visible"
-                document.getElementById("b45-size").innerText = `Base45 encoded Data size in bytes: ${response[1]}`
-                document.getElementById("out-cwt").innerText = "Decoded CWT : \n"+response[3]
                 document.getElementById("cwt-size").innerText = `CWT data size in bytes : ${cwt.length / 2}`
+                document.getElementById("cwt-size").style.visibility = "visible";
+                document.getElementById("out-cwt").innerText = "Decoded CWT : \n" + response[3]
             };
             xhttp.open("POST", 'qr', true);
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -149,15 +122,11 @@
         } catch (e) {
             document.getElementById("error").style.visibility = "visible";
             document.getElementById("qr-image").style.visibility = "hidden";
-            document.getElementById("version").style.visibility = "hidden";
-            document.getElementById("b45-size").innerText = ""
             document.getElementById("out-cwt").innerText = ""
             document.getElementById("cwt-size").innerText = ""
             document.getElementById("download-section").style.visibility = "hidden"
         }
     }
-
-    window.onload = () => showClaimsGenerator();
 </script>
 </html>
 

@@ -1,7 +1,7 @@
 const open = require('open');
 const express = require('express')
 const path = require('path');
-const { generateQRData, getMappedData} = require('../src')
+const { generateQRData, getMappedData,getSignedCwt} = require('../src')
 const QRCode = require("qrcode");
 const {
     DEFAULT_QR_QUALITY,
@@ -56,26 +56,29 @@ function hexStringToArrayBuffer(hexString) {
     if (hexString.length % 2 != 0) {
         console.log('WARNING: expecting an even number of characters in the hexString');
     }
-    var bad = hexString.match(/[G-Z\s]/i);
+    const bad = hexString.match(/[G-Z\s]/i);
     if (bad) {
         console.log('WARNING: found non-hex characters', bad);
     }
-    var pairs = hexString.match(/[\dA-F]{2}/gi);
-    var integers = pairs.map(function(s) {
+    const pairs = hexString.match(/[\dA-F]{2}/gi);
+    const integers = pairs.map(function (s) {
         return parseInt(s, 16);
     });
-    var array = new Uint8Array(integers);
+    const array = new Uint8Array(integers);
     console.log(array);
     return array.buffer;
 }
-app.post('/convert', (req, res) => {
-    let json = req.body;
-    const faceMap  = new Map();
-    faceMap.set(0,json.face.data);
-    faceMap.set(1,0);
-    faceMap.set(2,4);
-    json["face"] = faceMap;
+app.post('/convert', async (req, res) => {
+    let json = req.body.claims;
+    console.log(json)
+    if(json.face) {
+        const faceMap = new Map();
+        faceMap.set(0, json.face);
+        json["face"] = faceMap;
+    }
     console.log("DATA RECEIVED CONVERT: ", json)
     const claim169MappedData = getMappedData(json)
-    res.send(claim169MappedData)
+    console.log(claim169MappedData)
+    const cwt = await getSignedCwt(claim169MappedData);
+    res.send(cwt)
 })

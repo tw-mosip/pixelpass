@@ -29,6 +29,8 @@ exports.CLAIM_169_MAP =
         ["binaryImage", 16],
         ["binaryImageFormat", 17],
         ["bestQualityFingers", 18],
+        ["vaccineStatus", 19],
+        ["vaccineType", 20],
         ["rightThumb", 50],
         ["rightPointerFinger", 51],
         ["rightMiddleFinger", 52],

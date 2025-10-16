@@ -7,10 +7,14 @@ import co.nstant.`in`.cbor.model.DataItem
 import io.mosip.pixelpass.cbor.Utils
 import io.mosip.pixelpass.common.decodeFromBase64UrlFormat
 import io.mosip.pixelpass.exception.UnknownBinaryFileTypeException
+import io.mosip.pixelpass.shared.CLAIM_169_KEY_MAPPER
+import io.mosip.pixelpass.shared.CLAIM_169_VALUE_MAPPER
 import io.mosip.pixelpass.shared.DEFAULT_ZIP_FILE_NAME
+import io.mosip.pixelpass.shared.CLAIM_169_REVERSE_KEY_MAPPER
 import io.mosip.pixelpass.shared.ZIP_HEADER
 import io.mosip.pixelpass.shared.decodeHex
 import io.mosip.pixelpass.types.ECC
+import io.mosip.pixelpass.utils.toMapWithKeyAndValueMapper
 import io.mosip.pixelpass.zlib.ZLib
 import nl.minvws.encoding.Base45
 import org.json.JSONArray
@@ -67,7 +71,7 @@ class PixelPass {
                 tempFile?.delete()
             }
         }
-        throw UnknownBinaryFileTypeException();
+        throw UnknownBinaryFileTypeException()
     }
 
      fun generateQRData(
@@ -76,13 +80,12 @@ class PixelPass {
     ): String {
          val parsedData: Any?
          var compressedData = byteArrayOf()
-         var b45EncodedData = ""
+         val b45EncodedData: String
          try {
-             if (data.startsWith('[') && data.endsWith(']')) {
-                 parsedData = JSONArray(data)
-             }
-             else {
-                 parsedData = JSONObject(data)
+             parsedData = if (data.startsWith('[') && data.endsWith(']')) {
+                 JSONArray(data)
+             } else {
+                 JSONObject(data)
              }
              val toDataItem = Utils().toDataItem(parsedData)
 
@@ -101,28 +104,29 @@ class PixelPass {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun getMappedData(jsonData: JSONObject, mapper: Map<String,String>, cborEnable: Boolean = false): String {
-
-        val mappedJson = JSONObject()
-        val iterator = jsonData.keys().iterator()
-        while (iterator.hasNext()){
-            val next = iterator.next()
-            val key = mapper[next] ?: next
-            val value = jsonData.get(next.toString())
-            mappedJson.put(key.toString(),value)
-        }
-
-        val payload = Utils().toDataItem(mappedJson)
+    fun getMappedData(jsonData: JSONObject, keyMapper: Map<String,Int> = CLAIM_169_KEY_MAPPER, valueMapper: Map<String, Map<Any, Int>> = CLAIM_169_VALUE_MAPPER, cborEnable: Boolean = false): Any {
+        val mappedJson = jsonData.toMapWithKeyAndValueMapper(keyMapper,valueMapper)
 
         if (cborEnable) {
+            val payload = Utils().toDataItem(mappedJson)
             val cborByteArrayOutputStream = ByteArrayOutputStream()
             CborEncoder(cborByteArrayOutputStream).encode(payload)
             return cborByteArrayOutputStream.toByteArray().toHexString()
         }
-        return payload.toString()
+        return mappedJson
     }
 
-    fun decodeMappedData(data: String, mapper: Map<String,String>): String {
+    fun getMappedData(jsonData: JSONArray, keyMapper: Map<String,Int> = CLAIM_169_KEY_MAPPER, valueMapper: Map<String, Map<Any, Int>> = CLAIM_169_VALUE_MAPPER, cborEnable: Boolean = false): JSONArray {
+        val mappedJsonArray = JSONArray()
+        (0 until jsonData.length()).forEach { i ->
+            when (val item = jsonData.get(i)) {
+                is JSONObject -> mappedJsonArray.put(getMappedData(item,keyMapper,valueMapper,cborEnable))
+            }
+        }
+        return mappedJsonArray
+    }
+
+    fun decodeMappedData(data: String, keyMapper: Array<Map<String, String>> = CLAIM_169_REVERSE_KEY_MAPPER, valueMapperFunction: (JSONObject) -> JSONObject = Utils()::replaceValuesForClaim169): String {
         var jsonData: JSONObject
         try {
             val cborDecodedData = CborDecoder(ByteArrayInputStream(data.decodeHex())).decode()[0]
@@ -131,15 +135,17 @@ class PixelPass {
             jsonData = JSONObject(data)
         }
 
-        val payload = JSONObject()
-        val iterator = jsonData.keys().iterator()
-        while (iterator.hasNext()){
-            val next = iterator.next()
-            val key = mapper[next] ?: next
-            val value = jsonData.get(next.toString())
-            payload.put(key.toString(),value)
+        keyMapper.forEachIndexed { index, mapper ->
+            jsonData = Utils().replaceKeysAtDepth(jsonData,mapper,index)
         }
-        return payload.toString()
+        return valueMapperFunction(jsonData).toString()
     }
 
+    fun decodeMappedData(data: Array<String>, keyMapper: Array<Map<String, String>> = CLAIM_169_REVERSE_KEY_MAPPER, valueMapperFunction: (JSONObject) -> JSONObject = Utils()::replaceValuesForClaim169): Array<String> {
+        val decodedJsonArray = mutableListOf<String>()
+        data.indices.forEach { i ->
+                decodedJsonArray.add(i,decodeMappedData(data[i],keyMapper,valueMapperFunction))
+        }
+        return decodedJsonArray.toTypedArray()
+    }
 }

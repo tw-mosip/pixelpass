@@ -30,8 +30,20 @@ app.get('/styles.css', (req, res) => {
 })
 
 app.post('/qr', (req, res) => {
-    let json = req.body
-    console.log("JSON RECEIVED : ", json)
+    let json = req.body;
+    console.log("RECEIVED:", json);
+
+    let parsed;
+    try {
+        parsed = JSON.parse(json);
+        console.log("Valid JSON detected.");
+    } catch (e) {
+        console.log("Non‑JSON input, treating as raw text.");
+        parsed = json;
+    }
+
+    const stringified = typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
+
     const opts = {
         errorCorrectionLevel: DEFAULT_ECC_LEVEL,
         quality: DEFAULT_QR_QUALITY,
@@ -41,11 +53,19 @@ app.post('/qr', (req, res) => {
             dark: COLOR_BLACK,
             light: COLOR_WHITE
         }
+    };
+
+    try {
+        const qrData = generateQRData(stringified);
+        const version = QRCode.create(qrData, { errorCorrectionLevel: DEFAULT_ECC_LEVEL }).version;
+
+        QRCode.toDataURL(qrData, opts).then(qr => res.send([version, qr]));
+    } catch (err) {
+        console.error("QR generation failed:", err);
+        res.status(500).send("Error generating QR");
     }
-    let qrData = generateQRData(JSON.stringify(json));
-    let version = QRCode.create(qrData, {errorCorrectionLevel : DEFAULT_ECC_LEVEL}).version
-    QRCode.toDataURL(qrData,opts).then(qr => res.send([version,qr]))
-})
+});
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

@@ -16,7 +16,8 @@ on:
       - release*
       - master
       - develop*
-
+permissions:
+  contents: write
 jobs:
   publish-pixelpass-to-npm-registry:
     if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' && github.event_name == 'workflow_dispatch' }}"

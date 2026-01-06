@@ -16,11 +16,11 @@ on:
       - release*
       - master
       - develop*
-permissions:
-  contents: write
 jobs:
   publish-pixelpass-to-npm-registry:
     if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' && github.event_name == 'workflow_dispatch' }}"
+    permissions:
+      contents: write
     uses: mosip/kattu/.github/workflows/npm-publish-to-npm-registry.yml@master
     with:
       SERVICE_LOCATION: './js'

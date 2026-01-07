@@ -60,20 +60,39 @@ returns a base45 decoded and zlib decompressed string
 returns a unzipped string
 
 
-`getMappedData( jsonData, mapper, cborEnable )`
+`getMappedData(jsonData: JSONObject, keyMapper: Map<String,Int>, valueMapper: Map<String, Map<Any, Int>>, cborEnable: Boolean = false)`
 
 - `jsonData` - A JSON data. Which is a JSONObject.
-- `mapper` - A Map which is used to map with the JSON. Which is a Map<String,String>.
+- `keyMapper` - A Map which is used to map keys for the given JSON data. Which is a Map<String,Int>. It will default to the Claim-169 key mapper if nothing provided.
+- `valueMapper` - A Map which is used to map values for the given JSON data. Which is a Map<String, Map<Any, Int>>. It will default to the Claim-169 value mapper if nothing provided.
 - `cborEnable` - A Boolean which is used to enable or disable CBOR encoding on mapped data. Defaults to `false` if not provided.
 
 return a hex string which is a CBOR encoded JSON with given mapper if `cborEnable` is set to true. Or returns a JSON remapped string.
 
-`decodeMappedData( data, mapper )`
+`getMappedData(jsonData: JSONArray, keyMapper: Map<String,Int>, valueMapper: Map<String, Map<Any, Int>>, cborEnable: Boolean = false)`
+
+- `jsonData` - An array of JSON data. Which is a JSONArray.
+- `keyMapper` - A Map which is used to map keys for the given JSON data. Which is a Map<String,Int>. It will default to the Claim-169 key mapper if nothing provided.
+- `valueMapper` - A Map which is used to map values for the given JSON data. Which is a Map<String, Map<Any, Int>>. It will default to the Claim-169 value mapper if nothing provided.
+- `cborEnable` - A Boolean which is used to enable or disable CBOR encoding on mapped data. Defaults to `false` if not provided.
+
+return an array hex string which is a CBOR encoded JSON with given mapper if `cborEnable` is set to true. Or returns an array of JSON remapped string.
+
+`decodeMappedData(data: String, keyMapper: Array<Map<String, String>>, valueMapperFunction: (JSONObject) -> JSONObject)`
 
 - `data` - A CBOR Encoded string or JSON string which needs to be re mapped.
-- `mapper` - A Map which is used to map with the JSON.Which is a Map<String,String>
+- `keyMapper` - A array of map which is used to reverse map keys for the given data. Which is a Array<Map<String, String>>. The order of array is directly equals to the depth of JSON tree. As some of the keys are repeated at different depths of JSON this approach is needed. It will default to the Claim-169 reverse key mapper if nothing provided.
+- `valueMapperFunction` - A function which is used to map values for the given data. Which is a (JSONObject) -> JSONObject. It will default to the Claim-169 value mapper function if nothing provided.
 
-return a JSONObject which mapped with given mapper.
+return a JSON remapped string.
+
+`decodeMappedData(data: Array<String>, keyMapper: Array<Map<String, String>>, valueMapperFunction: (JSONObject) -> JSONObject)`
+
+- `data` - An array of CBOR Encoded string or JSON string which needs to be re mapped.
+- `keyMapper` - A array of map which is used to reverse map keys for the given data. Which is a Array<Map<String, String>>. The order of array is directly equals to the depth of JSON tree. As some of the keys are repeated at different depths of JSON this approach is needed. It will default to the Claim-169 reverse key mapper if nothing provided.
+- `valueMapperFunction` - A function which is used to map values for the given data. Which is a (JSONObject) -> JSONObject. It will default to the Claim-169 value mapper function if nothing provided.
+
+return an array JSON remapped string.
 
 `toJson(base64UrlEncodedCborEncodedString)`
 

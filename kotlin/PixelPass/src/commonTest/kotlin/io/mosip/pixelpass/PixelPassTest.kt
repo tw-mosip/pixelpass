@@ -5,11 +5,15 @@ import io.mosip.pixelpass.exception.UnknownBinaryFileTypeException
 import io.mosip.pixelpass.zlib.ZLib
 import junit.framework.TestCase.assertEquals
 import nl.minvws.encoding.Base45
+import org.json.JSONArray
 import org.json.JSONObject
 import org.zeroturnaround.zip.ZipUtil
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.test.*
+import io.mosip.pixelpass.shared.*
+import io.mosip.pixelpass.utils.toMapWithKeyAndValueMapper
+
 
 
 class PixelPassTest {
@@ -19,6 +23,7 @@ class PixelPassTest {
         clearAllMocks()
     }
 
+    private val pixelPass = PixelPass()
 
     @Test
     fun `should return decoded data for given QR data`() {
@@ -74,54 +79,22 @@ class PixelPassTest {
 
     @Test
     fun `should return mapped CBOR data for given data with map`() {
-        val expected = "a36131633230376132644a686f6e613365486f6e6179";
+        val expected = "a3016332303702644a686f6e0365486f6e6179"
         val data = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
-        val mapper = mapOf("id" to "1", "name" to "2", "l_name" to "3")
+        val mapper = mapOf("id" to 1, "name" to 2, "l_name" to 3)
 
-        val actual = PixelPass().getMappedData(data, mapper, true)
+        val actual = PixelPass().getMappedData(data, mapper, emptyMap(), true)
         assertEquals(expected, actual)
     }
 
     @Test
     fun `should return mapped data for given data with map`() {
-        val expected = "{ 1: 207, 2: Jhon, 3: Honay }";
+        val expected = mapOf(3 to "Honay", 2 to "Jhon", 1 to "207")
         val data = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
-        val mapper = mapOf("id" to "1", "name" to "2", "l_name" to "3")
+        val mapper = mapOf("id" to 1, "name" to 2, "l_name" to 3)
 
         val actual = PixelPass().getMappedData(data, mapper)
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `should return mapped CBOR data for given data with map for claim 169 semantics`() {
-        val expected =
-            "b261316e3131313130303030333234303133613263312e30613362454e61346c5065746572204d204a686f6e61356550657465726136614d6137644a686f6e61386831393838303130326139613162313078184e657720436974792c204d4554524f204c494e452c205041623131717065746572406578616d706c652e636f6d6231326a2b31203233342d35363762313362555362313461326231356a4a686f6e20486f6e61696231367903513033434241424446383344303638414342354445363542334344463235453030333646324335343643423930333738433538374130373645374137353944464432374341373837324236434446463333394145414143413631413630323346443144333035413942344633334341413234384345444533384236374437433931354335394135314242344537374431303037374136323532353838373331383346383244363546344334383235303341354130314634314445453631324333353432453533373039383738313545353932423845413230323046443342444443373437383937444231303233374541443137394535354234343142433644384241443037434535333531323943463844353539343435434333413239443734364642463131373444453245374330463334333942453744424541343532304346383838323541414536423146323931413734364142383137374336354232413435394444313942443332433043333037303030344238354331443633303334373037434336393041423042413032333335304338333337464336383934303631454238413731344138463232464532333635453741393034433732444543393734364142454131413332393645434143443141343034353037393445444344324233343834344537433139454237464231413441463342303543334233373442443239343136303346373244334639413632454142394132464441454545454338454536453335304638413138363343304130414231423430353844313534353539413143443531333345464346363832414243333339393630383139433934323738383944363033383042363335413744323144303137393734424241353737393834393046363638414444383644413538313235443943344331323032434131333038463737333445343345384637374345423041463936384138463842383838343946394239384232363632303339393437304544303537453739333144454438323837364443413839364133304430303331413843424437423945444644463136433135433638353346344638443945454330393331374338344544414534423334394645353444323344384543374443394242394636394644374237423233333833423634463232453235466231376132623138665b312c20325d";
-        val data = JSONObject(
-            "{\"id\":\"11110000324013\",\"version\":\"1.0\",\"language\":\"EN\",\"fullName\":\"Peter M Jhon\",\"firstName\":\"Peter\",\"middleName\":\"M\",\"lastName\":\"Jhon\",\"dob\":\"19880102\",\"gender\":\"1\",\"address\":\"New City, METRO LINE, PA\",\"email\":\"peter@example.com\",\"phone\":\"+1 234-567\",\"nationality\":\"US\",\"maritalStatus\":\"2\",\"guardian\":\"Jhon Honai\",\"binaryImage\":\"03CBABDF83D068ACB5DE65B3CDF25E0036F2C546CB90378C587A076E7A759DFD27CA7872B6CDFF339AEAACA61A6023FD1D305A9B4F33CAA248CEDE38B67D7C915C59A51BB4E77D10077A625258873183F82D65F4C482503A5A01F41DEE612C3542E5370987815E592B8EA2020FD3BDDC747897DB10237EAD179E55B441BC6D8BAD07CE535129CF8D559445CC3A29D746FBF1174DE2E7C0F3439BE7DBEA4520CF88825AAE6B1F291A746AB8177C65B2A459DD19BD32C0C3070004B85C1D63034707CC690AB0BA023350C8337FC6894061EB8A714A8F22FE2365E7A904C72DEC9746ABEA1A3296ECACD1A40450794EDCD2B34844E7C19EB7FB1A4AF3B05C3B374BD2941603F72D3F9A62EAB9A2FDAEEEEC8EE6E350F8A1863C0A0AB1B4058D154559A1CD5133EFCF682ABC339960819C9427889D60380B635A7D21D017974BBA57798490F668ADD86DA58125D9C4C1202CA1308F7734E43E8F77CEB0AF968A8F8B88849F9B98B26620399470ED057E7931DED82876DCA896A30D0031A8CBD7B9EDFDF16C15C6853F4F8D9EEC09317C84EDAE4B349FE54D23D8EC7DC9BB9F69FD7B7B23383B64F22E25F\",\"binaryImageFormat\":\"2\",\"bestQualityFingers\":\"[1, 2]\"}"
-        )
-        val mapper = mapOf(
-            "id" to "1",
-            "version" to "2",
-            "language" to "3",
-            "fullName" to "4",
-            "firstName" to "5",
-            "middleName" to "6",
-            "lastName" to "7",
-            "dob" to "8",
-            "gender" to "9",
-            "address" to "10",
-            "email" to "11",
-            "phone" to "12",
-            "nationality" to "13",
-            "maritalStatus" to "14",
-            "guardian" to "15",
-            "binaryImage" to "16",
-            "binaryImageFormat" to "17",
-            "bestQualityFingers" to "18"
-        )
-
-        val actual = PixelPass().getMappedData(data, mapper, true)
-        assertEquals(expected, actual)
+        assertEquals(expected, actual as Map<*, *>)
     }
 
     @Test
@@ -129,7 +102,7 @@ class PixelPassTest {
         val expected =
             JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}").toString()
         val data = "a302644a686f6e01633230370365486f6e6179"
-        val mapper = mapOf("1" to "id", "2" to "name", "3" to "l_name")
+        val mapper = arrayOf(mapOf("1" to "id", "2" to "name", "3" to "l_name"))
 
         val actual = PixelPass().decodeMappedData(data, mapper)
         assertEquals(expected, actual)
@@ -140,7 +113,7 @@ class PixelPassTest {
         val expected =
             JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}").toString()
         val data = "{ \"1\": \"207\", 2: Jhon, 3: Honay }"
-        val mapper = mapOf("1" to "id", "2" to "name", "3" to "l_name")
+        val mapper = arrayOf(mapOf("1" to "id", "2" to "name", "3" to "l_name"))
 
         val actual = PixelPass().decodeMappedData(data, mapper)
         assertEquals(expected, actual)
@@ -148,13 +121,13 @@ class PixelPassTest {
 
     @Test
     fun `should return decoded data for given QR data for zipped data`() {
-        val expected = "Hello World!!";
+        val expected = "Hello World!!"
         val createTempFile = File("certificate.json")
         val fos = FileOutputStream(createTempFile)
         fos.write(expected.toByteArray())
         fos.close()
         val tempZip = File.createTempFile("temp", ".zip")
-        ZipUtil.packEntry(createTempFile, tempZip);
+        ZipUtil.packEntry(createTempFile, tempZip)
 
         val actual = PixelPass().decodeBinary(tempZip.readBytes())
         assertEquals(expected, actual)
@@ -165,22 +138,22 @@ class PixelPassTest {
     fun `should throw error if binary data type not zip`() {
         val tempZip = File.createTempFile("temp", ".png")
 
-        tempZip.writeBytes(byteArrayOf(0x00, 0x01, 0x02)) // Writing some dummy bytes
+        tempZip.writeBytes(byteArrayOf(0x00, 0x01, 0x02))
 
-        assertFailsWith<UnknownBinaryFileTypeException> { // ✅ Correct usage
+        assertFailsWith<UnknownBinaryFileTypeException> {
             PixelPass().decodeBinary(tempZip.readBytes())
         }
 
         tempZip.deleteOnExit()
     }
+
     @Test
     fun `should encode raw data when JSON parsing fails`() {
         val invalidJson = "this is not valid json"
         val result = PixelPass().generateQRData(invalidJson)
         assertTrue(result.isNotEmpty(), "Encoded result should not be empty")
 
-        val strippedHeader = result
-        val decoded = Base45.getDecoder().decode(strippedHeader)
+        val decoded = Base45.getDecoder().decode(result)
         val decompressed = ZLib().decode(decoded)
         val original = String(decompressed)
 
@@ -195,13 +168,144 @@ class PixelPassTest {
 
         assertTrue(result.isNotEmpty(), "Result should not be empty")
 
-        val encoded = result
-        val decodedBytes = Base45.getDecoder().decode(encoded)
+        val decodedBytes = Base45.getDecoder().decode(result)
         val decompressedBytes = ZLib().decode(decodedBytes)
 
         assertNotNull(decompressedBytes)
     }
 
+    @Test
+    fun `should return claim 169 semantics mapped CBOR data for given data if no mapper is given`() {
+
+        val data = JSONObject(
+            """{
+                          "ID": "3918592438",
+                          "Version": 10,
+                          "Full Name": "Janardhan BS",
+                          "Date of Birth": "19840418",
+                          "Gender": "Male",
+                          "Address": "New House, Near Metro Line, Bengaluru, KA",
+                          "Email ID": "janardhan@example.com",
+                          "Phone Number": "+919876543210",
+                          "Nationality": "IN",
+                          "hello":"world",
+                          "Face": {
+                            "Data": "5249",
+                            "Data format": "Image",
+                            "Data sub format": "PNG"
+                          },
+                           "Voice": {
+                            "Data": "5249",
+                            "Data format": "Sound",
+                            "Data sub format": "WAV"
+                          }, 
+                        }"""
+        )
+        val actual = PixelPass().getMappedData(data, cborEnable = true)
+        val expected = "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return claim 169 semantics mapped CBOR data in an array for given array of data if no mapper is given`() {
+
+        val data = JSONArray(
+          """[{
+                        "ID": "3918592438",
+                        "Version": 10,
+                        "Full Name": "Janardhan BS",
+                        "Date of Birth": "19840418",
+                        "Gender": "Male",
+                        "Address": "New House, Near Metro Line, Bengaluru, KA",
+                        "Email ID": "janardhan@example.com",
+                        "Phone Number": "+919876543210",
+                        "Nationality": "IN",
+                        "hello":"world",
+                        "Face": {
+                          "Data": "5249",
+                          "Data format": "Image",
+                          "Data sub format": "PNG"
+                        },
+                        "Voice": {
+                          "Data": "5249",
+                          "Data format": "Sound",
+                          "Data sub format": "WAV"
+                        }, 
+                      },
+                      {
+                        "ID": "102030",
+                        "Full Name": "Jhon",
+                        "Date of Birth": "19990102",
+                        "Gender": "Male",
+                        "Left Middle Finger": {
+                          "Data": "9988776655332211",
+                          "Data format": "Template",
+                          "Data sub format": "Fingerprint Template NIST"
+                        }, 
+                      }
+                    ]"""
+                .trimIndent()
+        )
+        val actual = PixelPass().getMappedData(data, cborEnable = true)
+        val expected =
+            JSONArray(
+                """["ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64","a5016631303230333004644a686f6e0868313939393031303209011839a300703939383837373636353533333232313101010202"]"""
+            )
+        assertEquals(expected.toString(), actual.toString())
+    }
+
+    @Test
+    fun `should return properly remapped data for given claim 169 semantics mapped if no mapper is given`() {
+
+        val expected =
+            "{\"Address\":\"New House, Near Metro Line, Bengaluru, KA\",\"Version\":10,\"Email ID\":\"janardhan@example.com\",\"Full Name\":\"Janardhan BS\",\"Date of Birth\":\"19840418\",\"ID\":\"3918592438\",\"Gender\":\"Male\",\"hello\":\"world\",\"Phone Number\":\"+919876543210\",\"Face\":{\"Data format\":\"Image\",\"Data sub format\":\"PNG\",\"Data\":\"5249\"},\"Voice\":{\"Data format\":\"Sound\",\"Data sub format\":\"WAV\",\"Data\":\"5249\"},\"Nationality\":\"IN\"}"
+        val data =
+            "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
+        val actual = PixelPass().decodeMappedData(data)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return properly remapped data for given array claim 169 semantics mapped CBOR data if no mapper is given`() {
+
+        val expected =
+            arrayOf(
+                """{"Address":"New House, Near Metro Line, Bengaluru, KA","Version":10,"Email ID":"janardhan@example.com","Full Name":"Janardhan BS","Date of Birth":"19840418","ID":"3918592438","Gender":"Male","hello":"world","Phone Number":"+919876543210","Face":{"Data format":"Image","Data sub format":"PNG","Data":"5249"},"Voice":{"Data format":"Sound","Data sub format":"WAV","Data":"5249"},"Nationality":"IN"}""",
+                """{"Left Middle Finger":{"Data format":"Template","Data sub format":"Fingerprint Template NIST","Data":"9988776655332211"},"Full Name":"Jhon","Date of Birth":"19990102","ID":"102030","Gender":"Male"}""",
+            )
+        val data =
+            arrayOf(
+                "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64",
+                "a5016631303230333004644a686f6e0868313939393031303209011839a300703939383837373636353533333232313101010202",
+            )
+        val actual = PixelPass().decodeMappedData(data)
+        assertContentEquals(expected, actual)
+    }
+
+    @Test
+    fun `should round-trip JSON through getMappedData and decodeMappedData`() {
+        val inputJson = JSONObject(
+            """{"Address":"New House, Near Metro Line, Bengaluru, KA","Version":10,"Email ID":"janardhan@example.com","Full Name":"Janardhan BS","Date of Birth":"19840418","ID":"3918592438","Gender":"Male","hello":"world","Phone Number":"+919876543210","Face":{"Data format":"Image","Data sub format":"PNG","Data":"5249"},"Voice":{"Data format":"Sound","Data sub format":"WAV","Data":"5249"},"Nationality":"IN"}"""
+        )
+
+        val encoded = pixelPass.getMappedData(
+            jsonData = inputJson,
+            keyMapper = CLAIM_169_KEY_MAPPER,
+            valueMapper = CLAIM_169_VALUE_MAPPER,
+            cborEnable = true
+        ) as String
+
+        val decoded = pixelPass.decodeMappedData(
+            data = encoded,
+            keyMapper = CLAIM_169_REVERSE_KEY_MAPPER
+        )
+
+        val expectedElement = inputJson.toMapWithKeyAndValueMapper()
+        val actualElement = JSONObject(decoded).toMapWithKeyAndValueMapper()
+        assertEquals(
+            expectedElement as Map<*, *>,
+            actualElement as Map<*, *>
+        )
+    }
+
 }
-
-

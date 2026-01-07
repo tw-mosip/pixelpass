@@ -1,5 +1,5 @@
-group = "io.mosip"
-version = "0.8.0-SNAPSHOT"
+group = "io.inji"
+version = "0.8.0-RC1"
 
 publishing {
     repositories {
@@ -21,7 +21,7 @@ publishing {
     }
     publications {
         aar(MavenPublication) {
-            groupId = "io.mosip"
+            groupId = "io.inji"
             artifactId = "pixelpass-aar"
             version = version
             artifact(tasks.named("javadocJar").get())
@@ -48,7 +48,7 @@ publishing {
                         appendNode('id', 'Your developer ID')
                         appendNode('name', 'Mosip')
                         appendNode('email', 'mosip.emailnotifier@gmail.com')
-                        appendNode('organization', 'io.mosip')
+                        appendNode('organization', 'io.inji')
                         appendNode("organizationUrl", "https://github.com/inji/pixelpass")
                     }
 
@@ -135,7 +135,7 @@ publishing {
                         appendNode('id', 'Your developer ID')
                         appendNode('name', 'Mosip')
                         appendNode('email', 'mosip.emailnotifier@gmail.com')
-                        appendNode('organization', 'io.mosip')
+                        appendNode('organization', 'io.inji')
                         appendNode('organizationUrl', 'https://github.com/inji/pixelpass')
                     }
 

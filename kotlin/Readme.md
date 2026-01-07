@@ -13,15 +13,15 @@ Both Kotlin and Java packages are compiled from same Kotlin codebase. They are a
 
 ### Kotlin
 
-`implementation("io.mosip:pixelpass:0.5.0")`
+`implementation("io.inji:pixelpass:0.8.0-RC1")`
 
 ### Java
 
 ```xml
 <dependency>
-  <groupId>io.mosip</groupId>
+  <groupId>io.inji</groupId>
   <artifactId>pixelpass</artifactId>
-  <version>0.5.0</version>
+  <version>0.8.0-RC1</version>
 </dependency>
 ```
 

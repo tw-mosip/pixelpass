@@ -24,9 +24,9 @@ Pixelpass is a library which can do multiple things which are listed below,
 
 ## Usage
 
-`npm i @mosip/pixelpass`
+`npm i @injistack/pixelpass`
 
-[npm](https://www.npmjs.com/package/@mosip/pixelpass)
+[npm](https://www.npmjs.com/package/@injistack/pixelpass)
 
 ## Example
 
@@ -38,7 +38,7 @@ Prerequisites
 To run the example app copy the below command and paste it to your terminal.
 
 ```
-git clone https://github.com/mosip/pixelpass.git && cd pixelpass && git checkout develop && cd js && npm i && cd example && npm i && npm start
+git clone https://github.com/inji/pixelpass.git && cd pixelpass && git checkout develop && cd js && npm i && cd example && npm i && npm start
 ```
 
 ## APIs
@@ -52,7 +52,7 @@ git clone https://github.com/mosip/pixelpass.git && cd pixelpass && git checkout
 - `header` - Data header need to be prepend to identify the encoded data. defaults to `""`.
 
 ```javascript
-import { generateQRCode } from "@mosip/pixelpass";
+import { generateQRCode } from "@injistack/pixelpass";
 
 const data = "Hello";
 const qrCode = generateQRCode(data, ecc, header);
@@ -71,7 +71,7 @@ Returns a base64 encoded PNG image.
 - `header` - Data header need to be prepend to identify the encoded data. defaults to `""`.
 
 ```javascript
-import { generateQRData } from "@mosip/pixelpass";
+import { generateQRData } from "@injistack/pixelpass";
 
 const jsonString = '{"name":"Steve","id":"1","l_name":"jobs"}';
 const header = "jsonstring";
@@ -89,7 +89,7 @@ This API will return a base45 encoded string which is `Compressed > CBOR Encoded
 - `data` - Data needs to be decoded and decompressed without header.
 
 ```javascript
-import { decode } from "@mosip/pixelpass";
+import { decode } from "@injistack/pixelpass";
 
 const b45EncodedData =
   "NCFWTL$PPB$PN$AWGAE%5UW5A%ADFAHR9 IE:GG6ZJJCL2.AJKAMHA100+8S.1";
@@ -103,7 +103,7 @@ The `decode` will take a `string` as parameter and gives us decoded JSON string 
 - `data` - Data needs to be decoded and decompressed without header.
 
 ```javascript
-import { decodeBinary } from '@mosip/pixelpass';
+import { decodeBinary } from '@injistack/pixelpass';
 
 const zipdata = <zip-byte-array>;
 const decompressedData = decodeBinary(zipdata);
@@ -119,7 +119,7 @@ The `decodeBinary` will take a `UInt8ByteArray` as parameter and gives us unzipp
 - `cborEnable` - A Boolean which is used to enable or disable CBOR encoding on mapped data. Defaults to `false` if not provided.
 
 ```javascript
-import { getMappedData } from "@mosip/pixelpass";
+import { getMappedData } from "@injistack/pixelpass";
 
 const jsonData = { name: "Jhon", id: "207", l_name: "Honay" };
 const keyMapper = { id: "1", name: "2", l_name: "3" };
@@ -155,7 +155,7 @@ When `cborEnable` is `false`, the function returns the mapped JSON object direct
 - `valueMapper` - A function to transform values in the decoded JSON. Optional.
 
 ```javascript
-import { decodeMappedData } from "@mosip/pixelpass";
+import { decodeMappedData } from "@injistack/pixelpass";
 
 const cborEncodedString = "a302644a686f6e01633230370365486f6e6179";
 const keyMapper = [

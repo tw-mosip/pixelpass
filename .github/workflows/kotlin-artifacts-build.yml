@@ -21,14 +21,23 @@ on:
         options:
           - snapshot
           - release
+      group_path:
+        description: 'Select Maven group path'
+        required: true
+        type: choice
+        default: io/inji
+        options:
+          - io/inji
+          - io/mosip 
 
 jobs:
   publish-snapshot:
     if: ${{ inputs.release_type == 'snapshot' }}
-    uses: mosip/kattu/.github/workflows/maven-publish-android.yml@MOSIP-44195
+    uses: praful-technoforte/kattu/.github/workflows/maven-publish-android.yml@Mmaster
     with:
       SERVICE_LOCATION: 'kotlin'
       ANDROID_SERVICE_LOCATION: 'PixelPass'
+      GROUP_PATH: ${{ inputs.group_path }}   #dynamic
       JAVA_VERSION: 21
       LICENSE_NAME: 'MPL-2.0'
       RELEASE_TYPE: ${{ inputs.release_type }}
@@ -42,10 +51,11 @@ jobs:
   
   publish-release:
     if: ${{ inputs.release_type == 'release' }}
-    uses: mosip/kattu/.github/workflows/maven-publish-android-download.yaml@MOSIP-44195
+    uses: praful-technoforte/kattu/.github/workflows/maven-publish-android-download.yaml@master
     with:
       SERVICE_LOCATION: 'kotlin'
       ANDROID_SERVICE_LOCATION: 'PixelPass'
+      GROUP_PATH: ${{ inputs.group_path }}   #dynamic
       JAVA_VERSION: 21
       LICENSE_NAME: 'MPL-2.0'
       RELEASE_TYPE: ${{ inputs.release_type }}

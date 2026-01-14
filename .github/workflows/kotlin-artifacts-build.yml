@@ -33,7 +33,7 @@ on:
 jobs:
   publish-snapshot:
     if: ${{ inputs.release_type == 'snapshot' }}
-    uses: mosip/kattu/.github/workflows/maven-publish-android.yml@Mmaster
+    uses: mosip/kattu/.github/workflows/maven-publish-android.yml@master
     with:
       SERVICE_LOCATION: 'kotlin'
       ANDROID_SERVICE_LOCATION: 'PixelPass'

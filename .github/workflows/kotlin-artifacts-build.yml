@@ -33,7 +33,7 @@ on:
 jobs:
   publish-snapshot:
     if: ${{ inputs.release_type == 'snapshot' }}
-    uses: praful-technoforte/kattu/.github/workflows/maven-publish-android.yml@Mmaster
+    uses: mosip/kattu/.github/workflows/maven-publish-android.yml@Mmaster
     with:
       SERVICE_LOCATION: 'kotlin'
       ANDROID_SERVICE_LOCATION: 'PixelPass'
@@ -51,7 +51,7 @@ jobs:
   
   publish-release:
     if: ${{ inputs.release_type == 'release' }}
-    uses: praful-technoforte/kattu/.github/workflows/maven-publish-android-download.yaml@master
+    uses: mosip/kattu/.github/workflows/maven-publish-android-download.yaml@master
     with:
       SERVICE_LOCATION: 'kotlin'
       ANDROID_SERVICE_LOCATION: 'PixelPass'

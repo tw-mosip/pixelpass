@@ -18,6 +18,7 @@ const pako = require("pako");
 const cbor = require("cbor-web");
 const JSZip = require("jszip");
 const {
+  hexToBytes,
   translateToJson,
   replaceKeysAtDepth,
   replaceValuesForClaim169,
@@ -147,19 +148,23 @@ function decodeMappedData(
   }
 
   let jsonData;
-
+  let decoded;
   try {
-    const bytes = Buffer.from(data, "hex");
-    const decoded = cbor.decodeFirstSync(bytes);
+    const bytes = hexToBytes(data);
+
+    decoded = cbor.decodeFirstSync(bytes);
     jsonData = translateToJson(decoded);
   } catch (error) {
+    console.warn("Failed to decode as CBOR, trying JSON...", error);
     try {
       jsonData = JSON.parse(data);
     } catch (parseError) {
-      throw new Error(`Failed to decode data as CBOR or JSON: ${parseError.message}`);
+      console.error("Failed to decode as JSON:", parseError);
+      throw new Error(
+        `Failed to decode data as CBOR or JSON: ${parseError.message}`
+      );
     }
   }
-
   if (keyMapper) {
     if (!Array.isArray(keyMapper)) {
       throw new TypeError(

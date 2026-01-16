@@ -1,6 +1,6 @@
 {
   "name": "@injistack/pixelpass",
-  "version": "0.8.0-RC1",
+  "version": "0.8.0-RC2",
   "repository": "https://github.com/inji/pixelpass",
   "author": "INJI",
   "license": "MPL-2.0",
@@ -9,7 +9,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest --coverage",
-    "verify": "npm test"
+    "verify": "npm test",
+    "localPublish": "npm version patch && npm test && npm publish --access public --registry http://localhost:4873"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

@@ -7,6 +7,14 @@ const {
   CLAIM_169_ROOT_REVERSE_VALUE_MAPPER,
 } = require("../shared/Constants");
 
+function hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return bytes;
+}
+
 function translateToJson(value) {
   if (value instanceof Map) {
     const data = {};
@@ -167,12 +175,13 @@ function replaceValuesForClaim169(jsonData) {
 }
 
 function decodeFromBase64UrlFormat(content) {
-  return Buffer.from(content, 'base64url');
+  return Buffer.from(content, "base64url");
 }
 
 module.exports = {
+  hexToBytes,
   translateToJson,
   replaceKeysAtDepth,
   replaceValuesForClaim169,
-  decodeFromBase64UrlFormat
+  decodeFromBase64UrlFormat,
 };

@@ -1,5 +1,5 @@
 group = "io.inji"
-version = "0.8.0-RC1"
+version = "0.8.0-SNAPSHOT"
 
 publishing {
     repositories {
@@ -49,7 +49,7 @@ publishing {
                         appendNode('name', 'Mosip')
                         appendNode('email', 'mosip.emailnotifier@gmail.com')
                         appendNode('organization', 'io.inji')
-                        appendNode("organizationUrl", "https://github.com/inji/pixelpass")
+                        appendNode("organizationUrl", "https://inji.io")
                     }
 
                     def dependenciesNode = asNode().appendNode('dependencies')
@@ -136,7 +136,7 @@ publishing {
                         appendNode('name', 'Mosip')
                         appendNode('email', 'mosip.emailnotifier@gmail.com')
                         appendNode('organization', 'io.inji')
-                        appendNode('organizationUrl', 'https://github.com/inji/pixelpass')
+                        appendNode('organizationUrl', 'https://inji.io')
                     }
 
                     def dependenciesNode = asNode().appendNode('dependencies')

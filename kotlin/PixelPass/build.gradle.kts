@@ -200,7 +200,7 @@ afterEvaluate {
         "publishAarPublicationToMavenLocal",
         "publishJarReleasePublicationToMavenLocal",
         "publishAarPublicationToPixelpassRepository",
-        "publishJarPublicationToPixelpassRepository",
+        "publishJarReleasePublicationToPixelpassRepository"
     )
 
     publishTasks.forEach { publishName ->

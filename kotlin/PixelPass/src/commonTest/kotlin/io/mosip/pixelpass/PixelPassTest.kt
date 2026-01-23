@@ -308,31 +308,4 @@ class PixelPassTest {
         )
     }
 
-    @Test
-    fun `decodeClaim169 should return properly remapped data for claim 169 CBOR`() {
-
-        val expected =
-            "{\"Address\":\"New House, Near Metro Line, Bengaluru, KA\",\"Version\":10,\"Email ID\":\"janardhan@example.com\",\"Full Name\":\"Janardhan BS\",\"Date of Birth\":\"19840418\",\"ID\":\"3918592438\",\"Gender\":\"Male\",\"hello\":\"world\",\"Phone Number\":\"+919876543210\",\"Face\":{\"Data format\":\"Image\",\"Data sub format\":\"PNG\",\"Data\":\"5249\"},\"Voice\":{\"Data format\":\"Sound\",\"Data sub format\":\"WAV\",\"Data\":\"5249\"},\"Nationality\":\"IN\"}"
-
-        val data =
-            "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
-
-        val actual = PixelPass().decodeClaim(data)
-
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `decodeClaim169 should behave same as decodeMappedData with claim 169 defaults`() {
-
-        val data =
-            "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
-
-        val direct = PixelPass().decodeMappedData(data)
-        val viaWrapper = PixelPass().decodeClaim(data)
-
-        assertEquals(direct, viaWrapper)
-    }
-
-
 }

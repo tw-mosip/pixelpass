@@ -185,6 +185,14 @@ class PixelPass {
     return payload.toString()
   }
 
+  fun decodeClaim(data: String): String {
+    return decodeMappedData(
+      data,
+      CLAIM_169_REVERSE_KEY_MAPPER,
+      Utils()::replaceValuesForClaim169
+    )
+  }
+
   fun decodeMappedData(
     data: String,
     keyMapper: Array<Map<String, String>> = CLAIM_169_REVERSE_KEY_MAPPER,

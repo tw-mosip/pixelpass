@@ -184,7 +184,7 @@ class PixelPass {
     }
     return payload.toString()
   }
-
+  @JvmOverloads
   fun decodeMappedData(
     data: String,
     keyMapper: Array<Map<String, String>> = CLAIM_169_REVERSE_KEY_MAPPER,

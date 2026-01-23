@@ -742,6 +742,18 @@ class PixelPassTest {
         
         assertNotNull(encoded)
         assertTrue(encoded is Map<*, *>)
+
+        val jsonObject = JSONObject()
+        (encoded as Map<*, *>).forEach { (k, v) ->
+            jsonObject.put(k.toString(), v)
+        }
+        val encodedString = jsonObject.toString()
+        val decoded = pixelPass.decodeMappedData(encodedString, decodeKeyMapper)
+        
+        val decodedJson = JSONObject(decoded)
+        // Values are mapped: "active" -> 100
+        assertEquals(100, decodedJson.getInt("userStatus"))
+        assertEquals("TestUser", decodedJson.getString("userName"))
     }
 
     @Test

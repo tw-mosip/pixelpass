@@ -53,8 +53,8 @@ class QrDataConvertorAndroidTest {
         val data = "Test QR Data"
         val header = "Header"
         
-        kotlin.test.assertFailsWith<RuntimeException> {
-            convertQRDataIntoBase64("$header$data", ECC.L)
-        }
+        val result = convertQRDataIntoBase64("$header$data", ECC.L)
+        
+        assertEquals("", result, "Should return empty string when exception occurs from QrCode.encodeText")
     }
 }

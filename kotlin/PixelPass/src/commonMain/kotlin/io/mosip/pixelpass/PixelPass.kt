@@ -2,7 +2,6 @@ package io.mosip.pixelpass
 
 import co.nstant.`in`.cbor.CborDecoder
 import co.nstant.`in`.cbor.CborEncoder
-import co.nstant.`in`.cbor.model.DataItem
 import io.mosip.pixelpass.cbor.Utils
 import io.mosip.pixelpass.common.decodeFromBase64UrlFormat
 import io.mosip.pixelpass.exception.UnknownBinaryFileTypeException
@@ -67,7 +66,11 @@ class PixelPass {
       } catch (e: Exception) {
         throw e
       } finally {
-        tempFile?.delete()
+        tempFile?.let {
+          if (!it.delete()) {
+            System.err.println("Warning: Failed to delete temp file: ${it.absolutePath}")
+          }
+        }
       }
     }
     throw UnknownBinaryFileTypeException()

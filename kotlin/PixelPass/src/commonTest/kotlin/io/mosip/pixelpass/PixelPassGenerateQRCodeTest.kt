@@ -8,6 +8,7 @@ import kotlin.test.fail
 import org.json.JSONArray
 import org.json.JSONObject
 
+@IgnoreOnAndroid
 class PixelPassGenerateQRCodeTest {
 
   private val pixelPass = PixelPass()

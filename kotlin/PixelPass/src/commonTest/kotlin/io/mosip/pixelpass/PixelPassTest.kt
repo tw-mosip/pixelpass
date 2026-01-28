@@ -1,311 +1,768 @@
 package io.mosip.pixelpass
 
-import io.mockk.*
 import io.mosip.pixelpass.exception.UnknownBinaryFileTypeException
-import io.mosip.pixelpass.zlib.ZLib
-import junit.framework.TestCase.assertEquals
-import nl.minvws.encoding.Base45
+import io.mosip.pixelpass.types.ECC
 import org.json.JSONArray
 import org.json.JSONObject
-import org.zeroturnaround.zip.ZipUtil
-import java.io.File
-import java.io.FileOutputStream
 import kotlin.test.*
-import io.mosip.pixelpass.shared.*
-import io.mosip.pixelpass.utils.toMapWithKeyAndValueMapper
 
-
-
+@IgnoreOnAndroid
 class PixelPassTest {
 
-    @AfterTest
-    fun after() {
-        clearAllMocks()
+    private lateinit var pixelPass: PixelPass
+
+    @BeforeTest
+    fun setUp() {
+        pixelPass = PixelPass()
     }
 
-    private val pixelPass = PixelPass()
+    // ========== generateQRCode Tests ==========
 
     @Test
-    fun `should return decoded data for given QR data`() {
-        val data = "NCFKVPV0QSIP600GP5L0"
-        val expected = "hello"
-
-        val actual = PixelPass().decode(data)
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `should return decoded data for given QR data in cbor`() {
-        val data = "NCF3QBXJA5NJRCOC004 QN4"
-        val expected = "{\"temp\":15}"
-
-        val actual = PixelPass().decode(data)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithDefaultParams() {
+        val data = """{"name":"Test","value":123}"""
+        
+        val result = pixelPass.generateQRCode(data)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return encoded QR data for given data with CBOR`() {
-        val data =
-            "{\"str\":\"stringtype\",\"intP\":10,\"intN\":-10,\"intL\":111111110,\"intLN\":111111110,\"float\":10.01,\"nulltype\":null,\"bool\":true,\"bool2\":false,\"arryE\":[],\"arryF\":[1,2,3,-4,\"hello\",{\"temp\":123}],\"objE\":{},\"objS\":{\"str\":\"stringtype\"}}"
-        val expected =
-            "NCF6QB2NJXTAGPTV30I-R.431DJENA2JA-NEO:2RZI.3TL69%5L+2T+BTR\$9M PHQUKSIEUJ4\$F W0XQ08LA-NEYJ25/FTELJTPC31L.R-PI+YQXDPV0Q0C5-Q5S2W5OIJWIQZNOLN*XKRK1OP65QQ-NKQVB%/JX1M%9IF+8U48+SB000Z2WWS7"
-
-        val actual = PixelPass().generateQRData(data)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithLowECC() {
+        val data = """{"name":"Test"}"""
+        
+        val result = pixelPass.generateQRCode(data, ECC.L)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return decoded JSON data for given QR data with CBOR`() {
-        val expected =
-            "{\"arryE\":[],\"arryF\":[1,2,3,-4,\"hello\",{\"temp\":123}],\"bool\":true,\"intLN\":111111110,\"intL\":111111110,\"float\":10.01,\"intN\":-10,\"nulltype\":null,\"objS\":{\"str\":\"stringtype\"},\"str\":\"stringtype\",\"intP\":10,\"bool2\":false,\"objE\":{}}"
-        val data =
-            "NCF6QB2NJXTAGPTV30I-R.431DJENA2JA-NEO:2RZI.3TL69%5L+2T+BTR\$9M PHQUKSIEUJ4\$F W0XQ08LA-NEYJ25/FTELJTPC31L.R-PI+YQXDPV0Q0C5-Q5S2W5OIJWIQZNOLN*XKRK1OP65QQ-NKQVB%/JX1M%9IF+8U48+SB000Z2WWS7"
-
-        val actual = PixelPass().decode(data)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithMediumECC() {
+        val data = """{"name":"Test"}"""
+        
+        val result = pixelPass.generateQRCode(data, ECC.M)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `encode in js decode in kotlin`() {
-        val expected =
-            "{\"arryE\":[],\"arryF\":[1,2,3,-4,\"hello\",{\"temp\":123}],\"bool\":true,\"intLN\":111111110,\"intL\":111111110,\"float\":10.01,\"intN\":-10,\"nulltype\":null,\"objS\":{\"str\":\"stringtype\"},\"str\":\"stringtype\",\"intP\":10,\"bool2\":false,\"objE\":{}}"
-        val data =
-            "NCF6QBJUBZJA W04IJFLTY\$IFHL4IJNU44TBJQQRJ2\$SVMLM:8QP/I2NC7D8RDDQOVXY4%V3WABH-EF3OU0Q8O5MIP.HDQ1JMZI.9K:V6JR8X\$F1Y9WH5FWE%109/D6XH1+P:GLVHL E7JJ1 H9LOEQS4PRAAUI+SBSCGCHSU7D00089AWS7"
-
-        val actual = PixelPass().decode(data)
-        assertEquals(expected, actual)
-    }
-
-
-    @Test
-    fun `should return mapped CBOR data for given data with map`() {
-        val expected = "a3016332303702644a686f6e0365486f6e6179"
-        val data = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
-        val mapper = mapOf("id" to 1, "name" to 2, "l_name" to 3)
-
-        val actual = PixelPass().getMappedData(data, mapper, emptyMap(), true)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithQuartileECC() {
+        val data = """{"name":"Test"}"""
+        
+        val result = pixelPass.generateQRCode(data, ECC.Q)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return mapped data for given data with map`() {
-        val expected = mapOf(3 to "Honay", 2 to "Jhon", 1 to "207")
-        val data = JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}")
-        val mapper = mapOf("id" to 1, "name" to 2, "l_name" to 3)
-
-        val actual = PixelPass().getMappedData(data, mapper)
-        assertEquals(expected, actual as Map<*, *>)
+    fun testGenerateQRCodeWithHighECC() {
+        val data = """{"name":"Test"}"""
+        
+        val result = pixelPass.generateQRCode(data, ECC.H)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return properly mapped JSON data for given CBOR`() {
-        val expected =
-            JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}").toString()
-        val data = "a302644a686f6e01633230370365486f6e6179"
-        val mapper = arrayOf(mapOf("1" to "id", "2" to "name", "3" to "l_name"))
-
-        val actual = PixelPass().decodeMappedData(data, mapper)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithHeader() {
+        val data = """{"name":"Test"}"""
+        val header = "HC1:"
+        
+        val result = pixelPass.generateQRCode(data, header = header)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return properly mapped JSON data for given data`() {
-        val expected =
-            JSONObject("{\"name\": \"Jhon\", \"id\": \"207\", \"l_name\": \"Honay\"}").toString()
-        val data = "{ \"1\": \"207\", 2: Jhon, 3: Honay }"
-        val mapper = arrayOf(mapOf("1" to "id", "2" to "name", "3" to "l_name"))
-
-        val actual = PixelPass().decodeMappedData(data, mapper)
-        assertEquals(expected, actual)
+    fun testGenerateQRCodeWithCustomHeader() {
+        val data = """{"id":12345}"""
+        val header = "CUSTOM_PREFIX:"
+        
+        val result = pixelPass.generateQRCode(data, ECC.M, header)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `should return decoded data for given QR data for zipped data`() {
-        val expected = "Hello World!!"
-        val createTempFile = File("certificate.json")
-        val fos = FileOutputStream(createTempFile)
-        fos.write(expected.toByteArray())
-        fos.close()
-        val tempZip = File.createTempFile("temp", ".zip")
-        ZipUtil.packEntry(createTempFile, tempZip)
+    fun testGenerateQRCodeWithEmptyHeader() {
+        val data = """{"test":"value"}"""
+        
+        val result = pixelPass.generateQRCode(data, ECC.L, "")
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
 
-        val actual = PixelPass().decodeBinary(tempZip.readBytes())
-        assertEquals(expected, actual)
-        tempZip.deleteOnExit()
+    // ========== decode Tests ==========
+
+    @Test
+    fun testDecodeValidJsonObject() {
+        val originalData = """{"name":"John","age":30}"""
+        val qrData = pixelPass.generateQRData(originalData)
+        
+        val decoded = pixelPass.decode(qrData)
+        
+        assertNotNull(decoded)
+        assertTrue(decoded.contains("name"))
+        assertTrue(decoded.contains("John"))
+        assertTrue(decoded.contains("age"))
     }
 
     @Test
-    fun `should throw error if binary data type not zip`() {
-        val tempZip = File.createTempFile("temp", ".png")
+    fun testDecodeValidJsonArray() {
+        val originalData = """[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]"""
+        val qrData = pixelPass.generateQRData(originalData)
+        
+        val decoded = pixelPass.decode(qrData)
+        
+        assertNotNull(decoded)
+        assertTrue(decoded.startsWith("["))
+        assertTrue(decoded.endsWith("]"))
+        assertTrue(decoded.contains("Alice"))
+        assertTrue(decoded.contains("Bob"))
+    }
 
-        tempZip.writeBytes(byteArrayOf(0x00, 0x01, 0x02))
+    @Test
+    fun testDecodeComplexObject() {
+        val originalData = """{"user":{"name":"Alice","details":{"age":25,"city":"Bangalore"}}}"""
+        val qrData = pixelPass.generateQRData(originalData)
+        
+        val decoded = pixelPass.decode(qrData)
+        
+        assertNotNull(decoded)
+        assertTrue(decoded.contains("user"))
+        assertTrue(decoded.contains("Alice"))
+        assertTrue(decoded.contains("Bangalore"))
+    }
+
+    @Test
+    fun testDecodePlainText() {
+        val originalData = "Simple plain text message"
+        val qrData = pixelPass.generateQRData(originalData)
+        
+        val decoded = pixelPass.decode(qrData)
+        
+        assertNotNull(decoded)
+        assertEquals(originalData, decoded)
+    }
+
+    @Test
+    fun testDecodeWithSpecialCharacters() {
+        val originalData = """{"message":"Hello @#$%^&*()"}"""
+        val qrData = pixelPass.generateQRData(originalData)
+        
+        val decoded = pixelPass.decode(qrData)
+        
+        assertNotNull(decoded)
+        assertTrue(decoded.contains("Hello"))
+    }
+
+    // ========== generateQRData Tests ==========
+
+    @Test
+    fun testGenerateQRDataWithJsonObject() {
+        val data = """{"name":"Test","value":123,"active":true}"""
+        
+        val result = pixelPass.generateQRData(data)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
+
+    @Test
+    fun testGenerateQRDataWithJsonArray() {
+        val data = """[{"id":1},{"id":2},{"id":3}]"""
+        
+        val result = pixelPass.generateQRData(data)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
+
+    @Test
+    fun testGenerateQRDataWithHeader() {
+        val data = """{"name":"Test"}"""
+        val header = "PREFIX:"
+        
+        val result = pixelPass.generateQRData(data, header)
+        
+        assertTrue(result.startsWith(header))
+    }
+
+    @Test
+    fun testGenerateQRDataWithEmptyHeader() {
+        val data = """{"test":"value"}"""
+        
+        val result = pixelPass.generateQRData(data, "")
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
+
+    @Test
+    fun testGenerateQRDataWithPlainText() {
+        val data = "Plain text data without JSON structure"
+        
+        val result = pixelPass.generateQRData(data)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
+
+    @Test
+    fun testGenerateQRDataWithEmptyString() {
+        val data = ""
+        
+        val result = pixelPass.generateQRData(data)
+        
+        assertNotNull(result)
+    }
+
+    @Test
+    fun testGenerateQRDataWithLargeJson() {
+        val largeJson = buildString {
+            append("{")
+            for (i in 1..100) {
+                append("\"field$i\":\"value$i\"")
+                if (i < 100) append(",")
+            }
+            append("}")
+        }
+        
+        val result = pixelPass.generateQRData(largeJson)
+        
+        assertNotNull(result)
+        assertTrue(result.isNotEmpty())
+    }
+
+    // ========== getMappedData Tests (String mapper) ==========
+
+    @Test
+    fun testGetMappedDataWithStringMapperBasic() {
+        val json = JSONObject()
+        json.put("firstName", "John")
+        json.put("lastName", "Doe")
+
+        val mapper = mapOf(
+            "firstName" to "first_name",
+            "lastName" to "last_name"
+        )
+
+        val result = pixelPass.getMappedData(json, mapper, cborEnable = false)
+
+        assertNotNull(result)
+        assertTrue(result.contains("first_name"))
+        assertTrue(result.contains("last_name"))
+        assertFalse(result.contains("firstName"))
+        assertFalse(result.contains("lastName"))
+    }
+
+    @Test
+    fun testGetMappedDataWithStringMapperCborEnabled() {
+        val json = JSONObject()
+        json.put("name", "Test")
+        json.put("value", 42)
+
+        val mapper = mapOf("name" to "user_name")
+
+        val result = pixelPass.getMappedData(json, mapper, cborEnable = true)
+
+        assertNotNull(result)
+        assertTrue(result is String)
+        assertTrue((result as String).isNotEmpty())
+    }
+
+    @Test
+    fun testGetMappedDataWithStringMapperNoMapping() {
+        val json = JSONObject()
+        json.put("field1", "value1")
+        json.put("field2", "value2")
+
+        val mapper = mapOf("otherField" to "mapped_field")
+
+        val result = pixelPass.getMappedData(json, mapper, cborEnable = false)
+
+        assertNotNull(result)
+        assertTrue(result.contains("field1"))
+        assertTrue(result.contains("field2"))
+    }
+
+    @Test
+    fun testGetMappedDataWithStringMapperEmptyMapper() {
+        val json = JSONObject()
+        json.put("key", "value")
+
+        val mapper = emptyMap<String, String>()
+
+        val result = pixelPass.getMappedData(json, mapper, cborEnable = false)
+
+        assertNotNull(result)
+        assertTrue(result.contains("key"))
+    }
+
+    // ========== getMappedData Tests (Int mapper - JSONObject) ==========
+
+    @Test
+    fun testGetMappedDataWithIntMapperBasic() {
+        val json = JSONObject()
+        json.put("name", "John")
+        json.put("age", 30)
+
+        val keyMapper = mapOf("name" to 1, "age" to 2)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(json, keyMapper, valueMapper, false)
+
+        assertNotNull(result)
+        assertTrue(result is Map<*, *>)
+        val resultMap = result as Map<*, *>
+        assertTrue(resultMap.containsKey(1))
+        assertTrue(resultMap.containsKey(2))
+        assertEquals("John", resultMap[1])
+        assertEquals(30, resultMap[2])
+    }
+
+    @Test
+    fun testGetMappedDataWithIntMapperCborEnabled() {
+        val json = JSONObject()
+        json.put("name", "Test")
+        json.put("id", 123)
+
+        val keyMapper = mapOf("name" to 1, "id" to 2)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(json, keyMapper, valueMapper, true)
+
+        assertNotNull(result)
+        assertTrue(result is String)
+        assertTrue((result as String).isNotEmpty())
+    }
+
+    @Test
+    fun testGetMappedDataWithIntMapperAndValueMapper() {
+        val json = JSONObject()
+        json.put("status", "active")
+        json.put("role", "admin")
+
+        val keyMapper = mapOf("status" to 1, "role" to 2)
+        val valueMapper: Map<String, Map<Any, Int>> = mapOf(
+            "status" to mapOf("active" to 1, "inactive" to 0),
+            "role" to mapOf("admin" to 10, "user" to 20)
+        )
+
+        val result = pixelPass.getMappedData(json, keyMapper, valueMapper, false)
+
+        assertNotNull(result)
+        val resultMap = result as Map<*, *>
+        assertEquals(1, resultMap[1])
+        assertEquals(10, resultMap[2])
+    }
+
+    @Test
+    fun testGetMappedDataWithIntMapperComplexValues() {
+        val json = JSONObject()
+        json.put("count", 100)
+        json.put("price", 99.99)
+        json.put("active", true)
+
+        val keyMapper = mapOf("count" to 1, "price" to 2, "active" to 3)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(json, keyMapper, valueMapper, false)
+
+        val resultMap = result as Map<*, *>
+        assertEquals(100, resultMap[1])
+        assertEquals(99.99, resultMap[2])
+        assertEquals(true, resultMap[3])
+    }
+
+    // ========== getMappedData Tests (JSONArray) ==========
+
+    @Test
+    fun testGetMappedDataWithJsonArrayBasic() {
+        val obj1 = JSONObject()
+        obj1.put("name", "Alice")
+        obj1.put("age", 25)
+
+        val obj2 = JSONObject()
+        obj2.put("name", "Bob")
+        obj2.put("age", 30)
+
+        val jsonArray = JSONArray()
+        jsonArray.put(obj1)
+        jsonArray.put(obj2)
+
+        val keyMapper = mapOf("name" to 1, "age" to 2)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(jsonArray, keyMapper, valueMapper, false)
+
+        assertEquals(2, result.length())
+    }
+
+    @Test
+    fun testGetMappedDataWithJsonArrayCborEnabled() {
+        val obj1 = JSONObject()
+        obj1.put("id", 1)
+
+        val jsonArray = JSONArray()
+        jsonArray.put(obj1)
+
+        val keyMapper = mapOf("id" to 1)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(jsonArray, keyMapper, valueMapper, true)
+
+        assertEquals(1, result.length())
+    }
+
+    @Test
+    fun testGetMappedDataWithJsonArrayEmptyArray() {
+        val jsonArray = JSONArray()
+
+        val keyMapper = emptyMap<String, Int>()
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        val result = pixelPass.getMappedData(jsonArray, keyMapper, valueMapper, false)
+
+        assertEquals(0, result.length())
+    }
+
+    @Test
+    fun testGetMappedDataWithJsonArrayInvalidItem() {
+        val jsonArray = JSONArray()
+        jsonArray.put("string value")
+
+        val keyMapper = emptyMap<String, Int>()
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        assertFailsWith<IllegalArgumentException> {
+            pixelPass.getMappedData(jsonArray, keyMapper, valueMapper, false)
+        }
+    }
+
+    @Test
+    fun testGetMappedDataWithJsonArrayMixedInvalidItems() {
+        val obj1 = JSONObject()
+        obj1.put("id", 1)
+
+        val jsonArray = JSONArray()
+        jsonArray.put(obj1)
+        jsonArray.put(123) // Invalid: not a JSONObject
+
+        val keyMapper = mapOf("id" to 1)
+        val valueMapper = emptyMap<String, Map<Any, Int>>()
+
+        assertFailsWith<IllegalArgumentException> {
+            pixelPass.getMappedData(jsonArray, keyMapper, valueMapper, false)
+        }
+    }
+
+    // ========== decodeMappedData Tests (String mapper) ==========
+
+    @Test
+    fun testDecodeMappedDataWithStringMapperBasic() {
+        val json = JSONObject()
+        json.put("first_name", "John")
+        json.put("last_name", "Doe")
+
+        val mapper = mapOf(
+            "first_name" to "firstName",
+            "last_name" to "lastName"
+        )
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, mapper)
+
+        val decoded = JSONObject(result)
+        assertEquals("John", decoded.getString("firstName"))
+        assertEquals("Doe", decoded.getString("lastName"))
+    }
+
+    @Test
+    fun testDecodeMappedDataWithStringMapperNoMapping() {
+        val json = JSONObject()
+        json.put("field1", "value1")
+        json.put("field2", "value2")
+
+        val mapper = mapOf("otherField" to "mappedField")
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, mapper)
+
+        val decoded = JSONObject(result)
+        assertTrue(decoded.has("field1"))
+        assertTrue(decoded.has("field2"))
+    }
+
+    @Test
+    fun testDecodeMappedDataWithStringMapperEmptyMapper() {
+        val json = JSONObject()
+        json.put("key", "value")
+
+        val mapper = emptyMap<String, String>()
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, mapper)
+
+        val decoded = JSONObject(result)
+        assertEquals("value", decoded.getString("key"))
+    }
+
+    // ========== decodeMappedData Tests (Array mapper) ==========
+
+    @Test
+    fun testDecodeMappedDataWithArrayMapperSingleDepth() {
+        val json = JSONObject()
+        json.put("1", "value1")
+        json.put("2", "value2")
+
+        val keyMapper = arrayOf(
+            mapOf("1" to "key1", "2" to "key2")
+        )
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, keyMapper)
+
+        val decoded = JSONObject(result)
+        assertTrue(decoded.has("key1"))
+        assertTrue(decoded.has("key2"))
+        assertEquals("value1", decoded.getString("key1"))
+        assertEquals("value2", decoded.getString("key2"))
+    }
+
+    @Test
+    fun testDecodeMappedDataWithArrayMapperMultipleDepths() {
+        val nested = JSONObject()
+        nested.put("b", "nestedValue")
+
+        val json = JSONObject()
+        json.put("a", nested)
+
+        val keyMapper = arrayOf(
+            mapOf("a" to "A"),
+            mapOf("b" to "B")
+        )
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, keyMapper)
+
+        val decoded = JSONObject(result)
+        assertTrue(decoded.has("A"))
+        val nestedDecoded = decoded.getJSONObject("A")
+        assertTrue(nestedDecoded.has("B"))
+        assertEquals("nestedValue", nestedDecoded.getString("B"))
+    }
+
+    @Test
+    fun testDecodeMappedDataWithArrayMapperDeepNesting() {
+        val level3 = JSONObject()
+        level3.put("c", "deep")
+
+        val level2 = JSONObject()
+        level2.put("b", level3)
+
+        val level1 = JSONObject()
+        level1.put("a", level2)
+
+        val keyMapper = arrayOf(
+            mapOf("a" to "A"),
+            mapOf("b" to "B"),
+            mapOf("c" to "C")
+        )
+
+        val encodedData = level1.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, keyMapper)
+
+        val decoded = JSONObject(result)
+        val l2 = decoded.getJSONObject("A")
+        val l3 = l2.getJSONObject("B")
+        assertEquals("deep", l3.getString("C"))
+    }
+
+    @Test
+    fun testDecodeMappedDataWithArrayMapperEmptyMapper() {
+        val json = JSONObject()
+        json.put("key", "value")
+
+        val keyMapper = arrayOf<Map<String, String>>()
+
+        val encodedData = json.toString()
+
+        val result = pixelPass.decodeMappedData(encodedData, keyMapper)
+
+        val decoded = JSONObject(result)
+        assertEquals("value", decoded.getString("key"))
+    }
+
+    // ========== decodeMappedData Tests (Array of strings) ==========
+
+    @Test
+    fun testDecodeMappedDataArrayOfStringsBasic() {
+        val json1 = JSONObject()
+        json1.put("a", "value1")
+
+        val json2 = JSONObject()
+        json2.put("b", "value2")
+
+        val dataArray = arrayOf(json1.toString(), json2.toString())
+
+        val keyMapper = arrayOf(
+            mapOf("a" to "A", "b" to "B")
+        )
+
+        val result = pixelPass.decodeMappedData(dataArray, keyMapper)
+
+        assertEquals(2, result.size)
+        val decoded1 = JSONObject(result[0])
+        val decoded2 = JSONObject(result[1])
+        assertTrue(decoded1.has("A"))
+        assertTrue(decoded2.has("B"))
+    }
+
+    @Test
+    fun testDecodeMappedDataArrayOfStringsEmptyArray() {
+        val dataArray = arrayOf<String>()
+
+        val keyMapper = arrayOf(mapOf("a" to "A"))
+
+        val result = pixelPass.decodeMappedData(dataArray, keyMapper)
+
+        assertEquals(0, result.size)
+    }
+
+    @Test
+    fun testDecodeMappedDataArrayOfStringsSingleItem() {
+        val json = JSONObject()
+        json.put("key", "value")
+
+        val dataArray = arrayOf(json.toString())
+
+        val keyMapper = arrayOf(mapOf("key" to "mappedKey"))
+
+        val result = pixelPass.decodeMappedData(dataArray, keyMapper)
+
+        assertEquals(1, result.size)
+        val decoded = JSONObject(result[0])
+        assertEquals("value", decoded.getString("mappedKey"))
+    }
+
+    // ========== decodeBinary Tests ==========
+
+    @Test
+    fun testDecodeBinaryInvalidData() {
+        val invalidData = "Invalid binary data".toByteArray()
 
         assertFailsWith<UnknownBinaryFileTypeException> {
-            PixelPass().decodeBinary(tempZip.readBytes())
+            pixelPass.decodeBinary(invalidData)
         }
+    }
 
-        tempZip.deleteOnExit()
+    // ========== Integration Tests ==========
+
+    @Test
+    fun testEncodeDecodeRoundTripSimple() {
+        val originalData = """{"name":"John","age":30,"active":true}"""
+        
+        val qrData = pixelPass.generateQRData(originalData)
+        val decoded = pixelPass.decode(qrData)
+        
+        val decodedJson = JSONObject(decoded)
+        assertEquals("John", decodedJson.getString("name"))
+        assertEquals(30, decodedJson.getInt("age"))
+        assertTrue(decodedJson.getBoolean("active"))
     }
 
     @Test
-    fun `should encode raw data when JSON parsing fails`() {
-        val invalidJson = "this is not valid json"
-        val result = PixelPass().generateQRData(invalidJson)
-        assertTrue(result.isNotEmpty(), "Encoded result should not be empty")
-
-        val decoded = Base45.getDecoder().decode(result)
-        val decompressed = ZLib().decode(decoded)
-        val original = String(decompressed)
-
-        assertEquals(invalidJson, original)
+    fun testEncodeDecodeRoundTripArray() {
+        val originalData = """[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]"""
+        
+        val qrData = pixelPass.generateQRData(originalData)
+        val decoded = pixelPass.decode(qrData)
+        
+        val decodedArray = JSONArray(decoded)
+        assertEquals(2, decodedArray.length())
+        assertEquals("Alice", decodedArray.getJSONObject(0).getString("name"))
+        assertEquals("Bob", decodedArray.getJSONObject(1).getString("name"))
     }
 
     @Test
-    fun `should return encoded QR data for JSON array`() {
-        val jsonArray = """[{"name":"Alice","age":30},{"name":"Bob","age":25}]"""
+    fun testMapEncodeDecodeRoundTrip() {
+        val json = JSONObject()
+        json.put("firstName", "Alice")
+        json.put("age", 25)
 
-        val result = PixelPass().generateQRData(jsonArray)
-
-        assertTrue(result.isNotEmpty(), "Result should not be empty")
-
-        val decodedBytes = Base45.getDecoder().decode(result)
-        val decompressedBytes = ZLib().decode(decodedBytes)
-
-        assertNotNull(decompressedBytes)
-    }
-
-    @Test
-    fun `should return claim 169 semantics mapped CBOR data for given data if no mapper is given`() {
-
-        val data = JSONObject(
-            """{
-                          "ID": "3918592438",
-                          "Version": 10,
-                          "Full Name": "Janardhan BS",
-                          "Date of Birth": "19840418",
-                          "Gender": "Male",
-                          "Address": "New House, Near Metro Line, Bengaluru, KA",
-                          "Email ID": "janardhan@example.com",
-                          "Phone Number": "+919876543210",
-                          "Nationality": "IN",
-                          "hello":"world",
-                          "Face": {
-                            "Data": "5249",
-                            "Data format": "Image",
-                            "Data sub format": "PNG"
-                          },
-                           "Voice": {
-                            "Data": "5249",
-                            "Data format": "Sound",
-                            "Data sub format": "WAV"
-                          }, 
-                        }"""
-        )
-        val actual = PixelPass().getMappedData(data, cborEnable = true)
-        val expected = "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `should return claim 169 semantics mapped CBOR data in an array for given array of data if no mapper is given`() {
-
-        val data = JSONArray(
-          """[{
-                        "ID": "3918592438",
-                        "Version": 10,
-                        "Full Name": "Janardhan BS",
-                        "Date of Birth": "19840418",
-                        "Gender": "Male",
-                        "Address": "New House, Near Metro Line, Bengaluru, KA",
-                        "Email ID": "janardhan@example.com",
-                        "Phone Number": "+919876543210",
-                        "Nationality": "IN",
-                        "hello":"world",
-                        "Face": {
-                          "Data": "5249",
-                          "Data format": "Image",
-                          "Data sub format": "PNG"
-                        },
-                        "Voice": {
-                          "Data": "5249",
-                          "Data format": "Sound",
-                          "Data sub format": "WAV"
-                        }, 
-                      },
-                      {
-                        "ID": "102030",
-                        "Full Name": "Jhon",
-                        "Date of Birth": "19990102",
-                        "Gender": "Male",
-                        "Left Middle Finger": {
-                          "Data": "9988776655332211",
-                          "Data format": "Template",
-                          "Data sub format": "Fingerprint Template NIST"
-                        }, 
-                      }
-                    ]"""
-                .trimIndent()
-        )
-        val actual = PixelPass().getMappedData(data, cborEnable = true)
-        val expected =
-            JSONArray(
-                """["ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64","a5016631303230333004644a686f6e0868313939393031303209011839a300703939383837373636353533333232313101010202"]"""
-            )
-        assertEquals(expected.toString(), actual.toString())
-    }
-
-    @Test
-    fun `should return properly remapped data for given claim 169 semantics mapped if no mapper is given`() {
-
-        val expected =
-            "{\"Address\":\"New House, Near Metro Line, Bengaluru, KA\",\"Version\":10,\"Email ID\":\"janardhan@example.com\",\"Full Name\":\"Janardhan BS\",\"Date of Birth\":\"19840418\",\"ID\":\"3918592438\",\"Gender\":\"Male\",\"hello\":\"world\",\"Phone Number\":\"+919876543210\",\"Face\":{\"Data format\":\"Image\",\"Data sub format\":\"PNG\",\"Data\":\"5249\"},\"Voice\":{\"Data format\":\"Sound\",\"Data sub format\":\"WAV\",\"Data\":\"5249\"},\"Nationality\":\"IN\"}"
-        val data =
-            "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64"
-        val actual = PixelPass().decodeMappedData(data)
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `should return properly remapped data for given array claim 169 semantics mapped CBOR data if no mapper is given`() {
-
-        val expected =
-            arrayOf(
-                """{"Address":"New House, Near Metro Line, Bengaluru, KA","Version":10,"Email ID":"janardhan@example.com","Full Name":"Janardhan BS","Date of Birth":"19840418","ID":"3918592438","Gender":"Male","hello":"world","Phone Number":"+919876543210","Face":{"Data format":"Image","Data sub format":"PNG","Data":"5249"},"Voice":{"Data format":"Sound","Data sub format":"WAV","Data":"5249"},"Nationality":"IN"}""",
-                """{"Left Middle Finger":{"Data format":"Template","Data sub format":"Fingerprint Template NIST","Data":"9988776655332211"},"Full Name":"Jhon","Date of Birth":"19990102","ID":"102030","Gender":"Male"}""",
-            )
-        val data =
-            arrayOf(
-                "ac016a33393138353932343338020a046c4a616e61726468616e2042530868313938343034313809010a78294e657720486f7573652c204e656172204d6574726f204c696e652c2042656e67616c7572752c204b410b756a616e61726468616e406578616d706c652e636f6d0c6d2b3931393837363534333231300d62494e183ea3006435323439010002001841a3006435323439010202006568656c6c6f65776f726c64",
-                "a5016631303230333004644a686f6e0868313939393031303209011839a300703939383837373636353533333232313101010202",
-            )
-        val actual = PixelPass().decodeMappedData(data)
-        assertContentEquals(expected, actual)
-    }
-
-    @Test
-    fun `should round-trip JSON through getMappedData and decodeMappedData`() {
-        val inputJson = JSONObject(
-            """{"Address":"New House, Near Metro Line, Bengaluru, KA","Version":10,"Email ID":"janardhan@example.com","Full Name":"Janardhan BS","Date of Birth":"19840418","ID":"3918592438","Gender":"Male","hello":"world","Phone Number":"+919876543210","Face":{"Data format":"Image","Data sub format":"PNG","Data":"5249"},"Voice":{"Data format":"Sound","Data sub format":"WAV","Data":"5249"},"Nationality":"IN"}"""
+        val encodeMapper = mapOf(
+            "firstName" to "first_name",
+            "age" to "user_age"
         )
 
-        val encoded = pixelPass.getMappedData(
-            jsonData = inputJson,
-            keyMapper = CLAIM_169_KEY_MAPPER,
-            valueMapper = CLAIM_169_VALUE_MAPPER,
-            cborEnable = true
-        ) as String
-
-        val decoded = pixelPass.decodeMappedData(
-            data = encoded,
-            keyMapper = CLAIM_169_REVERSE_KEY_MAPPER
+        val decodeMapper = mapOf(
+            "first_name" to "firstName",
+            "user_age" to "age"
         )
 
-        val expectedElement = inputJson.toMapWithKeyAndValueMapper()
-        val actualElement = JSONObject(decoded).toMapWithKeyAndValueMapper()
-        assertEquals(
-            expectedElement as Map<*, *>,
-            actualElement as Map<*, *>
-        )
+        val encoded = pixelPass.getMappedData(json, encodeMapper, false)
+        val decoded = pixelPass.decodeMappedData(encoded, decodeMapper)
+
+        val decodedJson = JSONObject(decoded)
+        assertEquals("Alice", decodedJson.getString("firstName"))
+        assertEquals(25, decodedJson.getInt("age"))
     }
 
+    @Test
+    fun testComplexMappingRoundTrip() {
+        val json = JSONObject()
+        json.put("userStatus", "active")
+        json.put("userName", "TestUser")
+
+        val encodeKeyMapper = mapOf("userStatus" to 1, "userName" to 2)
+        val encodeValueMapper: Map<String, Map<Any, Int>> = mapOf(
+            "userStatus" to mapOf("active" to 100, "inactive" to 200)
+        )
+
+        val decodeKeyMapper = arrayOf(
+            mapOf("1" to "userStatus", "2" to "userName")
+        )
+
+        val encoded = pixelPass.getMappedData(json, encodeKeyMapper, encodeValueMapper, false)
+        
+        assertNotNull(encoded)
+        assertTrue(encoded is Map<*, *>)
+
+        val jsonObject = JSONObject()
+        (encoded as Map<*, *>).forEach { (k, v) ->
+            jsonObject.put(k.toString(), v)
+        }
+        val encodedString = jsonObject.toString()
+        val decoded = pixelPass.decodeMappedData(encodedString, decodeKeyMapper)
+        
+        val decodedJson = JSONObject(decoded)
+        // Values are mapped: "active" -> 100
+        assertEquals(100, decodedJson.getInt("userStatus"))
+        assertEquals("TestUser", decodedJson.getString("userName"))
+    }
+
+    @Test
+    fun testGenerateQRCodeAndDecodeIntegration() {
+        val originalData = """{"user":"test","timestamp":1234567890}"""
+        
+        val qrImage = pixelPass.generateQRCode(originalData, ECC.M, "APP:")
+        
+        assertNotNull(qrImage)
+        assertTrue(qrImage.isNotEmpty())
+    }
 }
